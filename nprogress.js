@@ -183,6 +183,27 @@
     
   };
 
+  /* 
+   * Shows the bar independently from the progress bar.
+   */
+  NProgress.showBar = function () {
+    
+    var $el = NProgress.render();
+    $el.find('[role="bar"]').show();
+    
+  };
+  
+  /*
+   * Hides the bar independently from the progress bar.
+   */
+  NProgress.hideBar = function () {
+    
+      console.log('should hide bar')
+    var $el = NProgress.render();
+    $el.find('[role="bar"]').hide();
+    
+  };
+
   /**
    * (Internal) renders the progress bar markup based on the `template`
    * setting.
