@@ -28,6 +28,7 @@
     barId: 'nprogressbar',
     spinnerId: 'nprogressspinner',
     msgId: 'nprogressmsg',
+    msgHasBackground: false,
     template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>'
   };
 
@@ -126,6 +127,14 @@
    *
    */
   NProgress.start = function(t) {
+
+    // care for the handicapped...
+    var myNav = navigator.userAgent.toLowerCase();
+    if (myNav.indexOf('msie') != -1) {
+      NProgress.settings.showSpinner = false;
+      NProgress.settings.msgHasBackground = true;
+    }
+
     if (!NProgress.status) NProgress.set(0, t);
 
     var work = function() {
@@ -198,6 +207,7 @@
 
     var bar      = findSubElementById(progress, Settings.barId),
         perc     = fromStart ? '-100' : toBarPerc(NProgress.status || 0),
+        prmsg    = findSubElementById(progress, Settings.msgId),
         spinner;
     
     css(bar, {
@@ -205,9 +215,14 @@
       transform: 'translate3d(' + perc + '%,0,0)'
     });
 
+    if (Settings.msgHasBackground) {
+      addClass(prmsg, 'msgBG');
+    }
+
     if (!Settings.showSpinner) {
       spinner = findSubElementById(progress, Settings.spinnerId);
       spinner && removeElement(spinner);
+      addClass(prmsg, 'msgRF');
     }
 
     document.body.appendChild(progress);
