@@ -196,44 +196,44 @@
    * Shows the spinner independently from the progress bar.
    */
   NProgress.showSpinner = function () {
-    
-    var progress = NProgress.render(),
-        spinner  = findSubElementById(progress, Settings.spinnerId),
-    if (spinner) {
-        $el.find('[role="spinner"]').show();
-	}
-    
+    if (!Settings.showSpinner) {
+      var progress = NProgress.render(),
+          spinner  = findSubElementById(progress, Settings.spinnerId);
+      spinner && spinner.style.display = 'block';
+    }
   };
   
   /*
    * Hides the spinner independently from the progress bar.
    */
   NProgress.hideSpinner = function () {
-    
-    var $el = NProgress.render();
-    $el.find('[role="spinner"]').hide();
-    
+    if (!Settings.showSpinner) {
+      var progress = NProgress.render(),
+          spinner  = findSubElementById(progress, Settings.spinnerId);
+      spinner && spinner.style.display = 'none';
+    }
   };
 
   /* 
    * Shows the bar independently from the progress bar.
    */
   NProgress.showBar = function () {
-    
-    var $el = NProgress.render();
-    $el.find('[role="bar"]').show();
-    
+    if (!Settings.showBar) {
+      var progress = NProgress.render(),
+          bar      = findSubElementById(progress, Settings.barId);
+      bar && bar.style.display = 'block';
+    }
   };
   
   /*
    * Hides the bar independently from the progress bar.
    */
   NProgress.hideBar = function () {
-    
-      console.log('should hide bar')
-    var $el = NProgress.render();
-    $el.find('[role="bar"]').hide();
-    
+    if (!Settings.showBar) {
+      var progress = NProgress.render(),
+          bar      = findSubElementById(progress, Settings.barId);
+      bar && bar.style.display = 'none';
+    }
   };
 
   /**
@@ -270,10 +270,10 @@
       addClass(prmsg, 'msgRF');
     }
 
-	var parent = Settings.parent;
-	parent = (parent.appendChild ? parent : document.getElementsByTagName(parent));
+    var parent = Settings.parent;
+    parent = (parent.appendChild ? [parent] : document.getElementsByTagName(parent))[0];
     parent.appendChild(progress);
-      .addClass('nprogress-parent')
+    addClass(parent, 'nprogress-parent');
 	
     return progress;
   };
@@ -283,7 +283,9 @@
    */
 
   NProgress.remove = function() {
-    $(Settings.parent).removeClass('nprogress-parent');
+    var parent = Settings.parent;
+    parent = (parent.appendChild ? [parent] : document.getElementsByTagName(parent))[0];
+    removeClass(parent, 'nprogress-parent');
     removeClass(document.documentElement, 'nprogress-busy');
     var progress = document.getElementById('nprogress');
     progress && removeElement(progress);
