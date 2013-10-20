@@ -70,12 +70,12 @@
   <script>
     $('body').show();
     $('.version').text(NProgress.version);
-    NProgress.start();
+    NProgress.start("Hello World");
     setTimeout(function() { NProgress.done(); $('.fade').removeClass('out'); }, 1000);
 
-    $("#b-0").click(function() { NProgress.start(); });
-    $("#b-40").click(function() { NProgress.set(0.4); });
-    $("#b-inc").click(function() { NProgress.inc(); });
+    $("#b-0").click(function() { NProgress.start("Here we go"); });
+    $("#b-40").click(function() { NProgress.set(0.4, "40% no less"); });
+    $("#b-inc").click(function() { NProgress.inc("default", "a little more"); });
     $("#b-100").click(function() { NProgress.done(); });
   </script>
 

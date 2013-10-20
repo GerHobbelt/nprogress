@@ -1,17 +1,20 @@
 /* Make clicks pass-through */
+
+/* #29d #8C001A */
+
 #nprogress {
   pointer-events: none;
 }
 
 #nprogress .bar {
-  background: #29d;
+  background: #8C001A;
 
   position: absolute;
   z-index: 100;
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 3px;
 }
 
 /* Fancy blur effect */
@@ -21,12 +24,35 @@
   right: 0px;
   width: 100px;
   height: 100%;
-  box-shadow: 0 0 10px #29d, 0 0 5px #29d;
+  box-shadow: 0 0 10px #8C001A, 0 0 5px #8C001A;
   opacity: 1.0;
 
   -webkit-transform: rotate(3deg) translate(0px, -4px);
       -ms-transform: rotate(3deg) translate(0px, -4px);
           transform: rotate(3deg) translate(0px, -4px);
+}
+
+#nprogress .msg {
+    display: block;
+    position: fixed;
+    z-index: 100;
+    top: 9px;
+    right: 42px;
+    font-size: 18px;
+    color: #8C001A;
+    padding: 0px 6px 0px 6px;
+    text-shadow: 0px 0px 8px #8C001A;
+    font-family: source sans pro, sans-serif;
+    line-height: 1.5;
+}
+
+#nprogress .msgBG {
+    background-color: white;
+    opacity: 0.5;
+}
+
+#nprogress .msgRF {
+    right: 4px;
 }
 
 /* Remove these to get rid of the spinner */
@@ -44,8 +70,8 @@
   box-sizing: border-box;
 
   border: solid 2px transparent;
-  border-top-color: #29d;
-  border-left-color: #29d;
+  border-top-color: #8C001A;
+  border-left-color: #8C001A;
   border-radius: 50%;
 
   -webkit-animation: nprogress-spinner 400ms linear infinite;
