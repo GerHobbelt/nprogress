@@ -9,10 +9,7 @@
   <meta name="viewport" content="width=device-width">
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700,400italic' rel='stylesheet' type='text/css'>
   
-  <script src='vendor/jquery-1.10.js'></script>
   <script src='nprogress.js'></script>
-
-  <script>if(location.hostname.match(/ricostacruz\.com$/)){var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-20473929-1"]),_gaq.push(["_trackPageview"]),function(){var a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)}()}</script>
 </head>
 
 <body style='display: none'>
@@ -26,25 +23,25 @@
   <div class='contents fade out'>
     <div class='controls'>
       <p>
-        <button class='button play' id='b-0'></button>
+        <button class='button play' id='b-0' onclick='NProgress.start("Here we go");'></button>
         <i>NProgress</i><b>.start()</b>
         &mdash;
         shows the progress bar
       </p>
       <p>
-        <button class='button play' id='b-40'></button>
+        <button class='button play' id='b-40' onclick='NProgress.set(0.4, "40% no less");'></button>
         <i>NProgress</i><b>.set(0.4)</b>
         &mdash;
         sets a percentage
       </p>
       <p>
-        <button class='button play' id='b-inc'></button>
+        <button class='button play' id='b-inc' onclick='NProgress.inc("default", "a little more");'></button>
         <i>NProgress</i><b>.inc()</b>
         &mdash;
         increments by a little
       </p>
       <p>
-        <button class='button play' id='b-100'></button>
+        <button class='button play' id='b-100' onclick='NProgress.done();'></button>
         <i>NProgress</i><b>.done()</b>
         &mdash;
         completes the progress
@@ -63,22 +60,70 @@
           allowtransparency="true" frameborder="0" scrolling="0" width="100" height="20"></iframe>
       <iframe src="http://ghbtns.com/github-btn.html?user=rstacruz&type=follow&count=true"
           allowtransparency="true" frameborder="0" scrolling="0" width="175" height="20"></iframe>
-      <a href="https://news.ycombinator.com/submit" class="hn-button" data-title="NProgress" data-url="http://ricostacruz.com/nprogress/" data-count="horizontal" data-style="twitter">HN</a>
     </div>
   </div>
 
   <script>
-    $('body').show();
-    $('.version').text(NProgress.version);
-    NProgress.start("Hello World");
-    setTimeout(function() { NProgress.done(); $('.fade').removeClass('out'); }, 1000);
+    var body = document.getElementsByTagName('body')[0];
+    body.style.display = 'block'; // $('body').show();
+    var version_el = body.getElementsByClassName('version');
+    for (var i = version_el.length; i-- > 0; ) {
+      version_el[i].innerHTML = NProgress.version; // $('.version').text(NProgress.version);
+    }
+    NProgress.start("Hello World...");
 
-    $("#b-0").click(function() { NProgress.start("Here we go"); });
-    $("#b-40").click(function() { NProgress.set(0.4, "40% no less"); });
-    $("#b-inc").click(function() { NProgress.inc("default", "a little more"); });
-    $("#b-100").click(function() { NProgress.done(); });
+    function tick() { 
+	  // NProgress.inc() will never arrive at 'done'all by itself as it won't push the .status beyond the 0.994 mark:
+      if (NProgress.status > 0.99) {
+        NProgress.done(false, "Initial example animation completed"); 
+
+        slow_fade_all_ends_all();
+      } else {
+        NProgress.inc();
+        setTimeout(tick, 200);
+      }
+    }
+    tick();
+
+    function slow_fade_all_ends_all() {
+      function slow_fade_one(el, i) {
+        setTimeout(function() { 
+          removeClass(el, 'out'); 
+        }, i * 500);
+      }
+      var fade_el = body.getElementsByClassName('fade');
+      for (var i = fade_el.length; i-- > 0; ) {
+        slow_fade_one(fade_el[i], i);
+      }
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+
+    function removeClass(element, name) {
+      var oldList = classList(element),
+          newList;
+
+      if (!hasClass(element, name)) return;
+
+      // Replace the class name.
+      newList = oldList.replace(' ' + name + ' ', ' ');
+
+      // Trim the opening and closing spaces.
+      element.className = newList.substring(1, newList.length - 1);
+    }
+    
+    function classList(element) {
+      return (' ' + (element.className || '') + ' ').replace(/\s+/gi, ' ');
+    }
+
+    function hasClass(element, name) {
+      var list = typeof element == 'string' ? element : classList(element);
+      return list.indexOf(' ' + name + ' ') >= 0;
+    }
+
+
+
+
   </script>
-
-  <script>var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
 </body>
 </html>
