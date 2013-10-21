@@ -30,7 +30,9 @@
     spinnerId: 'nprogressspinner',
     msgId: 'nprogressmsg',
     msgHasBackground: false,
-    template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>'
+    template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>',
+    onDoneBegin: function(){},      // invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts
+    onDone: function(){}            // invoked at the end of the 'done'phase, when the animation has completed and the progress DOM element has been removed
   };
 
   /**
@@ -68,7 +70,9 @@
 
     n = clamp(n, Settings.minimum, 1);
     NProgress.status = (n === 1 ? null : n);
-    NProgress.msg = t || "";
+    if (t != null) {
+      NProgress.msg = t;
+    }
 
     var progress = NProgress.render(!started),
         bar      = findSubElementById(progress, Settings.barId),
@@ -79,39 +83,40 @@
 
     progress.offsetWidth; /* Repaint */
 
-    queue(function(next) {
-      // Set positionUsing if it hasn't already been set
-      if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+    // Set positionUsing if it hasn't already been set
+    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
 
+    queue(function() {
       // Add transition
+      console.log("NProgress: ", n, speed, ease, toBarPerc(n));
       css(bar, barPositionCSS(n, speed, ease));
 
-      if(prmsg) {
-          prmsg.innerHTML = msg || "";
-      }
-
-      if (n === 1) {
-        // Fade out
-        css(progress, { 
-          transition: 'none', 
-          opacity: 1 
-        });
-        progress.offsetWidth; /* Repaint */
-
-        setTimeout(function() {
-          css(progress, { 
-            transition: 'all ' + speed + 'ms linear', 
-            opacity: 0 
-          });
-          setTimeout(function() {
-            NProgress.remove();
-            next();
-          }, speed);
-        }, speed);
-      } else {
-        setTimeout(next, speed);
+      if(prmsg && msg != null) {
+          prmsg.innerHTML = msg;
       }
     });
+
+    if (n === 1) {
+      queue(function() {
+        Settings.onDoneBegin();
+
+        // Fade out
+        css(progress, {
+          transition: 'none',
+          opacity: 1
+        });
+      });
+      queue(function() {
+        css(progress, {
+          transition: 'all ' + speed + 'ms linear',
+          opacity: 0
+        });
+      });
+      queue(function() {
+          NProgress.remove();
+          Settings.onDone();
+      });
+    }
 
     return this;
   };
@@ -141,7 +146,7 @@
     var work = function() {
       setTimeout(function() {
         if (!NProgress.status) return;
-        NProgress.trickle(NProgress.msg);
+        NProgress.trickle();
         work();
       }, Settings.trickleSpeed);
     };
@@ -163,10 +168,10 @@
    *     NProgress.done(true);
    */
 
-  NProgress.done = function(force) {
+  NProgress.done = function(force, t) {
     if (!force && !NProgress.status) return this;
 
-    return NProgress.inc(0.3 + 0.5 * Math.random()).set(1);
+    return NProgress.inc(0.3 + 0.5 * Math.random(), t).set(1);
   };
 
   /**
@@ -192,17 +197,21 @@
     return NProgress.inc(Math.random() * Settings.trickleRate, t);
   };
 
-  /* 
+  /*
    * Shows the spinner independently from the progress bar.
    */
   NProgress.showSpinner = function () {
     if (!Settings.showSpinner) {
       var progress = NProgress.render(),
           spinner  = findSubElementById(progress, Settings.spinnerId);
-      spinner && spinner.style.display = 'block';
+      if (spinner) {
+        spinner.style.display = 'block';
+      }
     }
+
+    return this;
   };
-  
+
   /*
    * Hides the spinner independently from the progress bar.
    */
@@ -210,21 +219,29 @@
     if (!Settings.showSpinner) {
       var progress = NProgress.render(),
           spinner  = findSubElementById(progress, Settings.spinnerId);
-      spinner && spinner.style.display = 'none';
+      if (spinner) {
+        spinner.style.display = 'none';
+      }
     }
+
+    return this;
   };
 
-  /* 
+  /*
    * Shows the bar independently from the progress bar.
    */
   NProgress.showBar = function () {
     if (!Settings.showBar) {
       var progress = NProgress.render(),
           bar      = findSubElementById(progress, Settings.barId);
-      bar && bar.style.display = 'block';
+      if (bar) {
+        bar.style.display = 'block';
+      }
     }
+
+    return this;
   };
-  
+
   /*
    * Hides the bar independently from the progress bar.
    */
@@ -232,8 +249,12 @@
     if (!Settings.showBar) {
       var progress = NProgress.render(),
           bar      = findSubElementById(progress, Settings.barId);
-      bar && bar.style.display = 'none';
+      if (bar) {
+        bar.style.display = 'none';
+      }
     }
+
+    return this;
   };
 
   /**
@@ -245,20 +266,20 @@
     if (NProgress.isRendered()) return document.getElementById('nprogress');
 
     addClass(document.documentElement, 'nprogress-busy');
-    
+
     var progress = document.createElement('div');
     progress.id = 'nprogress';
     progress.innerHTML = Settings.template;
 
     var bar      = findSubElementById(progress, Settings.barId),
-        perc     = fromStart ? '-100' : toBarPerc(NProgress.status || 0),
+        n        = (fromStart ? -1 : (NProgress.status || 0)),
         prmsg    = findSubElementById(progress, Settings.msgId),
         spinner;
-    
-    css(bar, {
-      transition: 'all 0 linear',
-      transform: 'translate3d(' + perc + '%,0,0)'
-    });
+
+    // Set positionUsing if it hasn't already been set
+    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+
+    css(bar, barPositionCSS(n, 0, Settings.easing));
 
     if (Settings.msgHasBackground) {
       addClass(prmsg, 'msgBG');
@@ -274,7 +295,7 @@
     parent = (parent.appendChild ? [parent] : document.getElementsByTagName(parent))[0];
     parent.appendChild(progress);
     addClass(parent, 'nprogress-parent');
-	
+
     return progress;
   };
 
@@ -289,6 +310,8 @@
     removeClass(document.documentElement, 'nprogress-busy');
     var progress = document.getElementById('nprogress');
     progress && removeElement(progress);
+
+    return this;
   };
 
   /**
@@ -358,7 +381,7 @@
     } else if (Settings.positionUsing === 'translate') {
       barCSS = { transform: 'translate('+toBarPerc(n)+'%,0)' };
     } else {
-      barCSS = { 'margin-left': toBarPerc(n)+'%' };
+      barCSS = { 'margin-right': (-toBarPerc(n))+'%' };
     }
 
     barCSS.transition = 'all '+speed+'ms '+ease;
@@ -372,25 +395,37 @@
 
   var queue = (function() {
     var pending = [];
-    
+    var timerHandle = null;
+
     function next() {
-      var fn = pending.shift();
-      if (fn) {
-        fn(next);
+      // peek, then exec, then shift: this ensures any queue() calls inside fn() are indeed *queued* rather than executed immediately
+      if (pending.length) {
+        var fn = pending[0];
+        fn();
+        pending.shift();
+        if (pending.length) {
+          clearTimeout(timerHandle);
+          timerHandle = setTimeout(next, Settings.speed);
+        } else {
+          timerHandle = null;
+        }
       }
     }
 
     return function(fn) {
       pending.push(fn);
-      if (pending.length == 1) next();
+      if (pending.length == 1) {
+        if (timerHandle) { debugger; }
+        timerHandle = setTimeout(next, 1 /* Settings.speed */ ); // exec as fast as possible, but make sure subsequent callers in the same run do queue behind us --> timeout > 0
+      }
     };
   })();
 
   /**
-   * (Internal) Applies css properties to an element, similar to the jQuery 
+   * (Internal) Applies css properties to an element, similar to the jQuery
    * css method.
    *
-   * While this helper does assist with vendor prefixed property names, it 
+   * While this helper does assist with vendor prefixed property names, it
    * does not perform any manipulation of values prior to setting styles.
    */
 
@@ -431,7 +466,7 @@
 
     return function(element, properties) {
       var args = arguments,
-          prop, 
+          prop,
           value;
 
       if (args.length == 2) {
@@ -462,7 +497,7 @@
     var oldList = classList(element),
         newList = oldList + name;
 
-    if (hasClass(oldList, name)) return; 
+    if (hasClass(oldList, name)) return;
 
     // Trim the opening space.
     element.className = newList.substring(1);
@@ -486,8 +521,8 @@
   }
 
   /**
-   * (Internal) Gets a space separated list of the class names on the element. 
-   * The list is wrapped with a single space on each end to facilitate finding 
+   * (Internal) Gets a space separated list of the class names on the element.
+   * The list is wrapped with a single space on each end to facilitate finding
    * matches within the list.
    */
 
