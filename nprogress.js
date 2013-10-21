@@ -67,7 +67,9 @@
 
     n = clamp(n, Settings.minimum, 1);
     NProgress.status = (n === 1 ? null : n);
-    NProgress.msg = t?t:"";
+    if (t != null) {
+      NProgress.msg = t;
+    }
 
     var progress = NProgress.render(!started),
         bar      = findSubElementById(progress, Settings.barId),
@@ -85,8 +87,8 @@
       // Add transition
       css(bar, barPositionCSS(n, speed, ease));
 
-      if(prmsg) {
-          prmsg.innerHTML = (msg?msg:"");
+      if(prmsg && msg != null) {
+          prmsg.innerHTML = msg;
       }
     });
 
@@ -138,7 +140,7 @@
     var work = function() {
       setTimeout(function() {
         if (!NProgress.status) return;
-        NProgress.trickle(NProgress.msg);
+        NProgress.trickle();
         work();
       }, Settings.trickleSpeed);
     };
@@ -160,10 +162,10 @@
    *     NProgress.done(true);
    */
 
-  NProgress.done = function(force) {
+  NProgress.done = function(force, t) {
     if (!force && !NProgress.status) return this;
 
-    return NProgress.inc(0.3 + 0.5 * Math.random()).set(1);
+    return NProgress.inc(0.3 + 0.5 * Math.random(), t).set(1);
   };
 
   /**
