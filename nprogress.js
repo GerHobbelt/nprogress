@@ -210,14 +210,14 @@
     progress.innerHTML = Settings.template;
 
     var bar      = findSubElementById(progress, Settings.barId),
-        perc     = fromStart ? '-100' : toBarPerc(NProgress.status || 0),
+        n        = (fromStart ? -1 : (NProgress.status || 0)),
         prmsg    = findSubElementById(progress, Settings.msgId),
         spinner;
 
-    css(bar, {
-      transition: 'all 0 linear',
-      transform: 'translate3d(' + perc + '%,0,0)'
-    });
+    // Set positionUsing if it hasn't already been set
+    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+
+    css(bar, barPositionCSS(n, 0, Settings.easing));
 
     if (Settings.msgHasBackground) {
       addClass(prmsg, 'msgBG');
