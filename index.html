@@ -72,12 +72,14 @@
     }
     NProgress.start("Hello World...");
 
+    NProgress.settings.onDoneBegin = slow_fade_all_ends_all;
+
     function tick() { 
 	  // NProgress.inc() will never arrive at 'done'all by itself as it won't push the .status beyond the 0.994 mark:
       if (NProgress.status > 0.99) {
         NProgress.done(false, "Initial example animation completed"); 
 
-        slow_fade_all_ends_all();
+        // slow_fade_all_ends_all(); <-- executed via NProgress.settings.onDoneBegin instead
       } else {
         NProgress.inc();
         setTimeout(tick, 200);

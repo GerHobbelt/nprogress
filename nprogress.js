@@ -29,7 +29,9 @@
     spinnerId: 'nprogressspinner',
     msgId: 'nprogressmsg',
     msgHasBackground: false,
-    template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>'
+    template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>',
+    onDoneBegin: function(){},      // invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts
+    onDone: function(){}            // invoked at the end of the 'done'phase, when the animation has completed and the progress DOM element has been removed
   };
 
   /**
@@ -94,6 +96,7 @@
 
     if (n === 1) {
       queue(function() {
+        Settings.onDoneBegin();
 
         // Fade out
         css(progress, {
@@ -109,6 +112,7 @@
       });
       queue(function() {
           NProgress.remove();
+          Settings.onDone();
       });
     }
 
