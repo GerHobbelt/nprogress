@@ -78,39 +78,37 @@
 
     progress.offsetWidth; /* Repaint */
 
-    queue(function(next) {
-      // Set positionUsing if it hasn't already been set
-      if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+    // Set positionUsing if it hasn't already been set
+    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
 
+    queue(function() {
       // Add transition
       css(bar, barPositionCSS(n, speed, ease));
 
       if(prmsg) {
           prmsg.innerHTML = (msg?msg:"");
       }
-
-      if (n === 1) {
-        // Fade out
-        css(progress, { 
-          transition: 'none', 
-          opacity: 1 
-        });
-        progress.offsetWidth; /* Repaint */
-
-        setTimeout(function() {
-          css(progress, { 
-            transition: 'all ' + speed + 'ms linear', 
-            opacity: 0 
-          });
-          setTimeout(function() {
-            NProgress.remove();
-            next();
-          }, speed);
-        }, speed);
-      } else {
-        setTimeout(next, speed);
-      }
     });
+
+    if (n === 1) {
+      queue(function() {
+
+        // Fade out
+        css(progress, {
+          transition: 'none',
+          opacity: 1
+        });
+      });
+      queue(function() {
+        css(progress, {
+          transition: 'all ' + speed + 'ms linear',
+          opacity: 0
+        });
+      });
+      queue(function() {
+          NProgress.remove();
+      });
+    }
 
     return this;
   };
@@ -200,7 +198,7 @@
     if (NProgress.isRendered()) return document.getElementById('nprogress');
 
     addClass(document.documentElement, 'nprogress-busy');
-    
+
     var progress = document.createElement('div');
     progress.id = 'nprogress';
     progress.innerHTML = Settings.template;
@@ -209,7 +207,7 @@
         perc     = fromStart ? '-100' : toBarPerc(NProgress.status || 0),
         prmsg    = findSubElementById(progress, Settings.msgId),
         spinner;
-    
+
     css(bar, {
       transition: 'all 0 linear',
       transform: 'translate3d(' + perc + '%,0,0)'
@@ -320,25 +318,37 @@
 
   var queue = (function() {
     var pending = [];
-    
+    var timerHandle = null;
+
     function next() {
-      var fn = pending.shift();
-      if (fn) {
-        fn(next);
+      // peek, then exec, then shift: this ensures any queue() calls inside fn() are indeed *queued* rather than executed immediately
+      if (pending.length) {
+        var fn = pending[0];
+        fn();
+        pending.shift();
+        if (pending.length) {
+          clearTimeout(timerHandle);
+          timerHandle = setTimeout(next, Settings.speed);
+        } else {
+          timerHandle = null;
+        }
       }
     }
 
     return function(fn) {
       pending.push(fn);
-      if (pending.length == 1) next();
+      if (pending.length == 1) {
+        if (timerHandle) { debugger; }
+        timerHandle = setTimeout(next, 1 /* Settings.speed */ ); // exec as fast as possible, but make sure subsequent callers in the same run do queue behind us --> timeout > 0
+      }
     };
   })();
 
   /**
-   * (Internal) Applies css properties to an element, similar to the jQuery 
+   * (Internal) Applies css properties to an element, similar to the jQuery
    * css method.
    *
-   * While this helper does assist with vendor prefixed property names, it 
+   * While this helper does assist with vendor prefixed property names, it
    * does not perform any manipulation of values prior to setting styles.
    */
 
@@ -379,7 +389,7 @@
 
     return function(element, properties) {
       var args = arguments,
-          prop, 
+          prop,
           value;
 
       if (args.length == 2) {
@@ -410,7 +420,7 @@
     var oldList = classList(element),
         newList = oldList + name;
 
-    if (hasClass(oldList, name)) return; 
+    if (hasClass(oldList, name)) return;
 
     // Trim the opening space.
     element.className = newList.substring(1);
@@ -434,8 +444,8 @@
   }
 
   /**
-   * (Internal) Gets a space separated list of the class names on the element. 
-   * The list is wrapped with a single space on each end to facilitate finding 
+   * (Internal) Gets a space separated list of the class names on the element.
+   * The list is wrapped with a single space on each end to facilitate finding
    * matches within the list.
    */
 
