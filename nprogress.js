@@ -5,10 +5,6 @@
 
   if (typeof module === 'function') {
     module.exports = factory(this.jQuery || require('jquery'));
-  } else if (typeof define === 'function' && define.amd) {
-    define(['jquery'], function($) {
-      return factory($);
-    });
   } else {
     this.NProgress = factory(this.jQuery);
   }
@@ -27,7 +23,8 @@
     trickleRate: 0.02,
     trickleSpeed: 800,
     showSpinner: true,
-    template: '<div class="bar" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>'
+    template: '<div class="bar" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>',
+    containerElement: undefined
   };
 
   /**
@@ -71,7 +68,7 @@
     $progress.queue(function(next) {
       // Set positionUsing if it hasn't already been set
       if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
-
+      
       // Add transition
       $bar.css(barPositionCSS(n, speed, ease));
 
@@ -164,42 +161,6 @@
   };
 
   /**
-   * Waits for all supplied jQuery promises and
-   * increases the progress as the promises resolve.
-   * 
-   * @param $promise jQUery Promise
-   */
-  (function() {
-    var initial = 0, current = 0;
-    
-    NProgress.promise = function($promise) {
-      if (!$promise || $promise.state() == "resolved") {
-        return this;
-      }
-      
-      if (current == 0) {
-        NProgress.start();
-      }
-      
-      initial++;
-      current++;
-      
-      $promise.always(function() {
-        current--;
-        if (current == 0) {
-            initial = 0;
-            NProgress.done();
-        } else {
-            NProgress.set((initial - current) / initial);
-        }
-      });
-      
-      return this;
-    };
-    
-  })();
-
-  /**
    * (Internal) renders the progress bar markup based on the `template`
    * setting.
    */
@@ -221,7 +182,7 @@
     if (!Settings.showSpinner)
       $el.find('[role="spinner"]').remove();
 
-    $el.appendTo(document.body);
+    $el.appendTo(Settings.containerElement || document.body);
 
     return $el;
   };
