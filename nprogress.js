@@ -65,16 +65,13 @@
 
     $progress[0].offsetWidth; /* Repaint */
 
-    // Set pos absolute if containerElement is set
-    if (Settings.containerElement) $progress.css({ position: 'absolute' });
-
     $progress.queue(function(next) {
       // Set positionUsing if it hasn't already been set
       if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
       
       // Add transition
       $bar.css(barPositionCSS(n, speed, ease));
-      
+
       if (n === 1) {
         // Fade out
         $progress.css({ transition: 'none', opacity: 1 });
