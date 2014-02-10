@@ -12,7 +12,7 @@ function GUProgress(options) {
 		trickleRate: 0.02,
 		trickleSpeed: 800,
 		showSpinner: true,
-		template: '<div class="bar" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>',
+		template: "<div class=\"guprogress-bar\" role=\"bar\"></div>",
 		target: null
 	};
 
@@ -175,10 +175,10 @@ function GUProgress(options) {
 	 */
 
 	self.render = function(fromStart) {
-		if (self.isRendered()) return $("#self");
+		if (self.isRendered()) return $("#guprogress-self");
 		$('html').addClass('self-busy');
 
-		var $el = $("<div id='self'>")
+		var $el = $("<div id='guprogress-self'>")
 			.html(self.settings.template);
 
 		var perc = fromStart ? '-100' : toBarPerc(self.status || 0);
@@ -202,7 +202,7 @@ function GUProgress(options) {
 
 	self.remove = function() {
 		$('html').removeClass('self-busy');
-		$('#self').remove();
+		$('#guprogress-self').remove();
 	};
 
 	/**
@@ -210,7 +210,7 @@ function GUProgress(options) {
 	 */
 
 	self.isRendered = function() {
-		return ($("#self").length > 0);
+		return ($("#guprogress-self").length > 0);
 	};
 
 	/**
