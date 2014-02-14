@@ -90,7 +90,7 @@
     function slow_fade_all_ends_all() {
       function slow_fade_one(el, i) {
         setTimeout(function() { 
-          removeClass(el, 'out'); 
+          NProgress.Internals.removeClass(el, 'out'); 
         }, i * 500);
       }
       var fade_el = body.getElementsByClassName('fade');
@@ -98,34 +98,6 @@
         slow_fade_one(fade_el[i], i);
       }
     }
-
-    ////////////////////////////////////////////////////////////////////////
-
-    function removeClass(element, name) {
-      var oldList = classList(element),
-          newList;
-
-      if (!hasClass(element, name)) return;
-
-      // Replace the class name.
-      newList = oldList.replace(' ' + name + ' ', ' ');
-
-      // Trim the opening and closing spaces.
-      element.className = newList.substring(1, newList.length - 1);
-    }
-    
-    function classList(element) {
-      return (' ' + (element.className || '') + ' ').replace(/\s+/gi, ' ');
-    }
-
-    function hasClass(element, name) {
-      var list = typeof element == 'string' ? element : classList(element);
-      return list.indexOf(' ' + name + ' ') >= 0;
-    }
-
-
-
-
   </script>
 </body>
 </html>
