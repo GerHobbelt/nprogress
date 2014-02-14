@@ -12,7 +12,9 @@
   }
 
 })(function() {
-  var NProgress = {};
+  var NProgress = {
+    Internals: {}
+  };
 
   NProgress.version = '0.1.3';
 
@@ -32,8 +34,9 @@
     msgHasBackground: false,
     template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>',
     onDoneBegin: function(){},      // invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts
-    onDone: function(){}            // invoked at the end of the 'done'phase, when the animation has completed and the progress DOM element has been removed
+    onDone: function(){}            // invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed
   };
+  var II = NProgress.Internals;
 
   /**
    * Updates configuration.
@@ -75,9 +78,9 @@
     }
 
     var progress = NProgress.render(!started),
-        bar      = findSubElementById(progress, Settings.barId),
+        bar      = II.findSubElementById(progress, Settings.barId),
         msg      = NProgress.msg,
-        prmsg    = findSubElementById(progress, Settings.msgId),
+        prmsg    = II.findSubElementById(progress, Settings.msgId),
         speed    = Settings.speed,
         ease     = Settings.easing;
 
@@ -133,7 +136,6 @@
    *
    */
   NProgress.start = function(t) {
-
     // care for the handicapped...
     var myNav = navigator.userAgent.toLowerCase();
     if (myNav.indexOf('msie') != -1) {
@@ -203,7 +205,7 @@
   NProgress.showSpinner = function () {
     if (!Settings.showSpinner) {
       var progress = NProgress.render(),
-          spinner  = findSubElementById(progress, Settings.spinnerId);
+          spinner  = II.findSubElementById(progress, Settings.spinnerId);
       if (spinner) {
         spinner.style.display = 'block';
       }
@@ -218,7 +220,7 @@
   NProgress.hideSpinner = function () {
     if (!Settings.showSpinner) {
       var progress = NProgress.render(),
-          spinner  = findSubElementById(progress, Settings.spinnerId);
+          spinner  = II.findSubElementById(progress, Settings.spinnerId);
       if (spinner) {
         spinner.style.display = 'none';
       }
@@ -233,7 +235,7 @@
   NProgress.showBar = function () {
     if (!Settings.showBar) {
       var progress = NProgress.render(),
-          bar      = findSubElementById(progress, Settings.barId);
+          bar      = II.findSubElementById(progress, Settings.barId);
       if (bar) {
         bar.style.display = 'block';
       }
@@ -248,7 +250,7 @@
   NProgress.hideBar = function () {
     if (!Settings.showBar) {
       var progress = NProgress.render(),
-          bar      = findSubElementById(progress, Settings.barId);
+          bar      = II.findSubElementById(progress, Settings.barId);
       if (bar) {
         bar.style.display = 'none';
       }
@@ -298,15 +300,15 @@
   NProgress.render = function(fromStart) {
     if (NProgress.isRendered()) return document.getElementById('nprogress');
 
-    addClass(document.documentElement, 'nprogress-busy');
+    II.addClass(document.documentElement, 'nprogress-busy');
 
     var progress = document.createElement('div');
     progress.id = 'nprogress';
     progress.innerHTML = Settings.template;
 
-    var bar      = findSubElementById(progress, Settings.barId),
+    var bar      = II.findSubElementById(progress, Settings.barId),
         n        = (fromStart ? -1 : (NProgress.status || 0)),
-        prmsg    = findSubElementById(progress, Settings.msgId),
+        prmsg    = II.findSubElementById(progress, Settings.msgId),
         spinner;
 
     // Set positionUsing if it hasn't already been set
@@ -315,19 +317,19 @@
     css(bar, barPositionCSS(n, 0, Settings.easing));
 
     if (Settings.msgHasBackground) {
-      addClass(prmsg, 'msgBG');
+      II.addClass(prmsg, 'msgBG');
     }
 
     if (!Settings.showSpinner) {
-      spinner = findSubElementById(progress, Settings.spinnerId);
-      spinner && removeElement(spinner);
-      addClass(prmsg, 'msgRF');
+      spinner = II.findSubElementById(progress, Settings.spinnerId);
+      spinner && II.removeElement(spinner);
+      II.addClass(prmsg, 'msgRF');
     }
 
     var parent = Settings.parent;
     parent = (parent.appendChild ? [parent] : document.getElementsByTagName(parent))[0];
     parent.appendChild(progress);
-    addClass(parent, 'nprogress-parent');
+    II.addClass(parent, 'nprogress-parent');
 
     return progress;
   };
@@ -339,10 +341,10 @@
   NProgress.remove = function() {
     var parent = Settings.parent;
     parent = (parent.appendChild ? [parent] : document.getElementsByTagName(parent))[0];
-    removeClass(parent, 'nprogress-parent');
-    removeClass(document.documentElement, 'nprogress-busy');
+    II.removeClass(parent, 'nprogress-parent');
+    II.removeClass(document.documentElement, 'nprogress-busy');
     var progress = document.getElementById('nprogress');
-    progress && removeElement(progress);
+    progress && II.removeElement(progress);
 
     return this;
   };
@@ -517,8 +519,8 @@
    * (Internal) Determines if an element or space separated list of class names contains a class name.
    */
 
-  function hasClass(element, name) {
-    var list = typeof element == 'string' ? element : classList(element);
+  II.hasClass = function (element, name) {
+    var list = typeof element == 'string' ? element : II.classList(element);
     return list.indexOf(' ' + name + ' ') >= 0;
   }
 
@@ -526,32 +528,32 @@
    * (Internal) Adds a class to an element.
    */
 
-  function addClass(element, name) {
-    var oldList = classList(element),
+  II.addClass = function (element, name) {
+    var oldList = II.classList(element),
         newList = oldList + name;
 
-    if (hasClass(oldList, name)) return;
+    if (II.hasClass(oldList, name)) return;
 
     // Trim the opening space.
     element.className = newList.substring(1);
-  }
+  };
 
   /**
    * (Internal) Removes a class from an element.
    */
 
-  function removeClass(element, name) {
-    var oldList = classList(element),
+  II.removeClass = function (element, name) {
+    var oldList = II.classList(element),
         newList;
 
-    if (!hasClass(element, name)) return;
+    if (!II.hasClass(element, name)) return;
 
     // Replace the class name.
     newList = oldList.replace(' ' + name + ' ', ' ');
 
     // Trim the opening and closing spaces.
     element.className = newList.substring(1, newList.length - 1);
-  }
+  };
 
   /**
    * (Internal) Gets a space separated list of the class names on the element.
@@ -559,7 +561,7 @@
    * matches within the list.
    */
 
-  function classList(element) {
+  II.classList = function (element) {
     return (' ' + (element.className || '') + ' ').replace(/\s+/gi, ' ');
   }
 
@@ -567,11 +569,11 @@
    * (Internal) Removes an element from the DOM.
    */
 
-  function removeElement(element) {
+  II.removeElement = function (element) {
     element && element.parentNode && element.parentNode.removeChild(element);
   }
 
-  function findSubElementById(parent, id) {
+  II.findSubElementById = function (parent, id) {
       for(var i = 0; i < parent.childNodes.length; i++) {
           var ch = parent.childNodes[i];
           if(ch.id === id){
@@ -579,7 +581,7 @@
           }
 
           if(ch.childNodes && ch.childNodes.length) {
-              ch = findSubElementById(ch, id);
+              ch = II.findSubElementById(ch, id);
               if(ch) return ch;
           }
       }
