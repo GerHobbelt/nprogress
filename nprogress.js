@@ -1,17 +1,22 @@
 /*! NProgress (c) 2013, Rico Sta. Cruz
  *  http://ricostacruz.com/nprogress */
 
-;(function(factory) {
-
-  if (typeof module === 'function') {
-    module.exports = factory();
-  } else if (typeof define === 'function' && define.amd) {
-    define(factory);
-  } else {
-    this.NProgress = factory();
-  }
-
-})(function() {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], function () {
+            return (root.NProgress = factory());
+        });
+    } else if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like enviroments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else {
+        // Browser globals
+        root.NProgress = factory();
+    }
+}(this, function () {
   var NProgress = {
     Internals: {}
   };
@@ -33,8 +38,8 @@
     msgId: 'nprogressmsg',
     msgHasBackground: false,
     template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>',
-    onDoneBegin: function(){},      // invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts
-    onDone: function(){}            // invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed
+    onDoneBegin: function () {},      // invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts
+    onDone: function () {}            // invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed
   };
   var II = NProgress.Internals;
 
@@ -91,10 +96,10 @@
 
     queue(function() {
       // Add transition
-      console.log("NProgress: ", n, speed, ease, toBarPerc(n));
+      console.log('NProgress: ', n, speed, ease, toBarPerc(n));
       css(bar, barPositionCSS(n, speed, ease));
 
-      if(prmsg && msg != null) {
+      if (prmsg && msg != null) {
           prmsg.innerHTML = msg;
       }
     });
@@ -268,11 +273,11 @@
    * @param $promise jQUery Promise
    */
   NProgress.promise = function($promise) {
-    if (!$promise || $promise.state() == "resolved") {
+    if (!$promise || $promise.state() === 'resolved') {
       return this;
     }
 
-    if (current == 0) {
+    if (current === 0) {
       NProgress.start();
     }
 
@@ -281,7 +286,7 @@
 
     $promise.always(function() {
       current--;
-      if (current == 0) {
+      if (current === 0) {
           initial = 0;
           NProgress.done();
       } else {
@@ -414,14 +419,14 @@
     var barCSS;
 
     if (Settings.positionUsing === 'translate3d') {
-      barCSS = { transform: 'translate3d('+toBarPerc(n)+'%,0,0)' };
+      barCSS = { transform: 'translate3d(' + toBarPerc(n) + '%,0,0)' };
     } else if (Settings.positionUsing === 'translate') {
-      barCSS = { transform: 'translate('+toBarPerc(n)+'%,0)' };
+      barCSS = { transform: 'translate(' + toBarPerc(n) + '%,0)' };
     } else {
-      barCSS = { 'margin-right': (-toBarPerc(n))+'%' };
+      barCSS = { 'margin-right': (-toBarPerc(n)) + '%' };
     }
 
-    barCSS.transition = 'all '+speed+'ms '+ease;
+    barCSS.transition = 'all ' + speed + 'ms ' + ease;
 
     return barCSS;
   }
@@ -576,15 +581,15 @@
   }
 
   II.findSubElementById = function (parent, id) {
-      for(var i = 0; i < parent.childNodes.length; i++) {
+      for (var i = 0; i < parent.childNodes.length; i++) {
           var ch = parent.childNodes[i];
-          if(ch.id === id){
+          if (ch.id === id){
               return ch;
           }
 
-          if(ch.childNodes && ch.childNodes.length) {
+          if (ch.childNodes && ch.childNodes.length) {
               ch = II.findSubElementById(ch, id);
-              if(ch) return ch;
+              if (ch) return ch;
           }
       }
 
@@ -592,5 +597,5 @@
   }
 
   return NProgress;
-});
+}));
 
