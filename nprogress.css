@@ -10,7 +10,7 @@
   background: #8C001A;
 
   position: absolute;
-  z-index: 100;
+  z-index: 1031;
   top: 0;
   left: 0;
   right: 0;
@@ -60,7 +60,7 @@
 #nprogress .spinner {
   display: block;
   position: absolute;
-  z-index: 100;
+  z-index: 1031;
   top: 15px;
   right: 15px;
 }
