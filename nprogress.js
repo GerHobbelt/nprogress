@@ -346,6 +346,8 @@
     var progress = document.getElementById('nprogress');
     progress && II.removeElement(progress);
 
+    NProgress.status = null;
+
     return this;
   };
 
