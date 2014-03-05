@@ -4,13 +4,20 @@
 
 #nprogress {
   pointer-events: none;
+
+  position: absolute;
+  z-index: 2014;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
 }
 
 #nprogress .bar {
   background: #8C001A;
 
   position: absolute;
-  z-index: 1031;
   top: 0;
   left: 0;
   right: 0;
@@ -36,7 +43,6 @@
 #nprogress .msg {
     display: block;
     position: fixed;
-    z-index: 100;
     top: 9px;
     right: 42px;
     font-size: 18px;
@@ -60,7 +66,6 @@
 #nprogress .spinner {
   display: block;
   position: absolute;
-  z-index: 1031;
   top: 15px;
   right: 15px;
 }
@@ -84,6 +89,7 @@
   position: relative;
 }
 
+body.nprogress-parent #nprogress,
 body.nprogress-parent #nprogress .bar,
 body.nprogress-parent #nprogress .spinner {
   position: fixed;
