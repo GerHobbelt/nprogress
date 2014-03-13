@@ -1,7 +1,7 @@
 GUProgress
 =========
 
-Slim progress bars for Ajax'y applications. Forked from [NProgress](https://github.com/rstacruz/nprogress).
+Slim progress bars for Ajax'y applications. Forked from [NProgress](https://github.com/rstacruz/nprogress) by [Rico Sta Cruz](https://github.com/rstacruz).
 
 Installation
 ------------
@@ -46,7 +46,7 @@ number between `0..1`.
 
 ~~~ js
 progress.set(0.0);     // Sorta same as .start()
-NProgress.set(0.4);
+progress.set(0.4);
 progress.set(1.0);     // Sorta same as .done()
 ~~~
 
