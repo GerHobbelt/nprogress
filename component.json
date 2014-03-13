@@ -14,9 +14,9 @@
   "license": "MIT",
   "main": "nprogress.js",
   "scripts": [
-    "nprogress.js"
+    "guprogress.js"
   ],
   "styles": [
-    "nprogress.css"
+    "guprogress.css"
   ]
 }

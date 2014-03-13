@@ -1,8 +1,8 @@
 {
   "name": "nprogress",
-  "repo": "rstacruz/nprogress",
+  "repo": "glassumbrella/guprogress",
   "description": "slim progress bar",
-  "version": "0.1.2",
+  "version": "0.1",
   "keywords": [
     "progress",
     "bar",
@@ -12,12 +12,12 @@
     "jquery": "*"
   },
   "license": "MIT",
-  "main": "nprogress.js",
+  "main": "guprogress.js",
   "scripts": [
-    "nprogress.js"
+    "guprogress.js"
   ],
   "styles": [
-    "nprogress.css"
+    "guprogress.css"
   ],
   "ignore": [
     "**/.*",

@@ -1,10 +1,10 @@
 {
-  "name": "nprogress",
-  "author": "Rico Sta. Cruz <hi@ricostacruz.com>",
-  "version": "0.1.2",
+  "name": "guprogress",
+  "author": "Weiran Zhang <weiran@zhang.me.uk>",
+  "version": "0.1",
   "repository": {
      "type": "git",
-     "url": "https://github.com/rstacruz/nprogress.git"
+     "url": "https://github.com/GlassUmbrella/guprogress.git"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha -R spec"

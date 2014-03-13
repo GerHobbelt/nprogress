@@ -1,5 +1,5 @@
 /* Make clicks pass-through */
-#nprogress {
+.guprogress-bar {
   pointer-events: none;
 }
 
