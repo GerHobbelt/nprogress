@@ -1,24 +1,22 @@
-NProgress
+GUProgress
 =========
 
-Slim progress bars for Ajax'y applications. Inspired by Google, YouTube, and
-Medium.
-
-[![Status](https://secure.travis-ci.org/rstacruz/nprogress.png?branch=master)](http://travis-ci.org/rstacruz/nprogress) 
+Slim progress bars for Ajax'y applications. Forked from [NProgress](https://github.com/rstacruz/nprogress).
 
 Installation
 ------------
 
-Add jQuery (1.8 or above), [nprogress.js] and [nprogress.css] to your project.
+Add jQuery (1.8 or above), [guprogress.js] and [guprogress.css] to your project.
 
 Basic usage
 -----------
 
-Simply call `start()` and `done()` to control the progress bar.
+Instantiate a new GUProgress instance, pass in the target element, and call `start()` and `done()` to control the progress bar.
 
 ~~~ js
-NProgress.start();
-NProgress.done();
+var progress = new GUProgress(document.body);
+progress.start();
+progress.done();
 ~~~
 
 Using [Turbolinks] or similar? Ensure you're using Turbolinks 1.3.0+, and use 
@@ -26,9 +24,9 @@ this: (explained
     [here](https://github.com/rstacruz/nprogress/issues/8#issuecomment-23010560))
 
 ~~~ js
-$(document).on('page:fetch',   function() { NProgress.start(); });
-$(document).on('page:change',  function() { NProgress.done(); });
-$(document).on('page:restore', function() { NProgress.remove(); });
+$(document).on('page:fetch',   function() { progress.start(); });
+$(document).on('page:change',  function() { progress.done(); });
+$(document).on('page:restore', function() { progress.remove(); });
 ~~~
 
 Ideas
@@ -47,9 +45,9 @@ __Percentages:__ To set a progress percentage, call `.set(n)`, where *n* is a
 number between `0..1`.
 
 ~~~ js
-NProgress.set(0.0);     // Sorta same as .start()
+progress.set(0.0);     // Sorta same as .start()
 NProgress.set(0.4);
-NProgress.set(1.0);     // Sorta same as .done()
+progress.set(1.0);     // Sorta same as .done()
 ~~~
 
 __Incrementing:__ To increment the progress bar, just use `.inc()`. This
@@ -57,7 +55,7 @@ increments it with a random amount. This will never get to 100%: use it for
 every image load (or similar).
 
 ~~~ js
-NProgress.inc();
+progress.inc();
 ~~~
 
 __Force-done:__ By passing `true` to `done()`, it will show the progress bar
@@ -65,7 +63,7 @@ even if it's not being shown. (The default behavior is that *.done()* will not
     do anything if *.start()* isn't called)
 
 ~~~ js
-NProgress.done(true);
+progress.done(true);
 ~~~
 
 Configuration
@@ -74,14 +72,14 @@ Configuration
 Change the minimum percentage using `minimum`.
 
 ~~~ js
-NProgress.configure({ minimum: 0.1 });
+new GUProgress({ minimum: 0.1 });
 ~~~
 
 You can change the markup using `template`. To keep the progress
 bar working, keep an element with `role='bar'` in there.
 
 ~~~ js
-NProgress.configure({
+new GUProgress({
   template: "<div class='....'>...</div>"
 });
 ~~~
@@ -90,32 +88,32 @@ Adjust animation settings using `ease` (a CSS easing string) and `speed` (in
     ms).
 
 ~~~ js
-NProgress.configure({ ease: 'ease', speed: 500 });
+new GUProgress({ ease: 'ease', speed: 500 });
 ~~~
 
 Want to turn off trickling? Set `trickle` to `false`.
 
 ~~~ js
-NProgress.configure({ trickle: false });
+new GUProgress({ trickle: false });
 ~~~
 
 You can adjust the `trickleRate` (how much to increase per trickle) and 
 `trickleSpeed` (how often to trickle, in ms).
 
 ~~~ js
-NProgress.configure({ trickleRate: 0.02, trickleSpeed: 800 });
+new GUProgress({ trickleRate: 0.02, trickleSpeed: 800 });
 ~~~
 
 Want to turn off loading spinner? Set `showSpinner` to `false`.
 
 ~~~ js
-NProgress.configure({ showSpinner: false });
+new GUProgress({ showSpinner: false });
 ~~~
 
 Customization
 -------------
 
-Just edit `nprogress.css` to your liking. Tip: you probably only want to find
+Just edit `guprogress.css` to your liking. Tip: you probably only want to find
 and replace occurances of `#29d`.
 
 The included CSS file is pretty minimal... in fact, feel free to scrap it and
@@ -130,18 +128,18 @@ Resources
 Acknowledgements
 ----------------
 
-© 2013, Rico Sta. Cruz. Released under the [MIT License](License.md).
+© 2014, Weiran Zhang, Glass Umbrella. Released under the [MIT License](License.md).
 
-**NProgress** is authored and maintained by [Rico Sta. Cruz][rsc] with help from 
+Forked from NProgress, © 2013, Rico Sta. Cruz.
+
+**GUProgress** is authored and maintained by [Weiran Zhang](wz) of [Glass Umbrella](gu) with help from 
 its [contributors][c]
 
- * [My website](http://ricostacruz.com) (ricostacruz.com)
- * [Github](http://github.com/rstacruz) (@rstacruz)
- * [Twitter](http://twitter.com/rstacruz) (@rstacruz)
+ * [My website](http://weiranzhang.com) (weiranzhang.com)
+ * [Github](http://github.com/weiran) (@weiran)
+ * [Twitter](http://twitter.com/weiran) (@weiran)
 
-[rsc]: http://ricostacruz.com
-[c]:   http://github.com/rstacruz/nprogress/contributors
+[wz]: http://twitter.com/weiran
+[gu]: http://glassumbrella.co
+[c]:   http://github.com/GlassUmbrella/guprogress/contributors
 [Turbolinks]: https://github.com/rails/turbolinks
-[nprogress.js]: http://ricostacruz.com/nprogress/nprogress.js
-[nprogress.css]: http://ricostacruz.com/nprogress/nprogress.css
-
