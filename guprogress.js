@@ -288,7 +288,12 @@ function GUProgress(options) {
 	}
 
 
-	$(function init() {
-		self.settings = $.extend({}, self.settings, options);
-	}());
+	(function init() {
+		if (typeof options == "object" && "nodeType" in options && options.nodeType === 1 && options.cloneNode) {
+		  	// most probably this is a DOM node, set it as the target
+		  	self.settings.target = options;
+		} else {
+			self.settings = $.extend({}, self.settings, options);
+		}
+	})();
 }
