@@ -61,6 +61,9 @@
     n = clamp(n, Settings.minimum, 1);
     NProgress.status = (n === 1 ? null : n);
 
+    // Set positionUsing if it hasn't already been set
+    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+
     var $progress = NProgress.render(!started),
         $bar      = $progress.find('[role="bar"]'),
         speed     = Settings.speed,
@@ -69,9 +72,6 @@
     $progress[0].offsetWidth; /* Repaint */
 
     $progress.queue(function(next) {
-      // Set positionUsing if it hasn't already been set
-      if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
-
       // Add transition
       $bar.css(barPositionCSS(n, speed, ease));
 
@@ -215,7 +215,7 @@
 
     $el.find('[role="bar"]').css({
       transition: 'all 0 linear',
-      transform: 'translate3d('+perc+'%,0,0)'
+      transform: Settings.positionUsing == 'translate' ? 'translate('+perc+'%,0)' : 'translate3d('+perc+'%,0,0)'
     });
 
     if (!Settings.showSpinner)
