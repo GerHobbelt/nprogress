@@ -1,7 +1,7 @@
 {
   "name": "nprogress",
   "author": "Rico Sta. Cruz <hi@ricostacruz.com>",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "nprogress.js",
   "repository": {
      "type": "git",
@@ -11,7 +11,7 @@
     "test": "./node_modules/.bin/mocha -R spec"
   },
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "chai": "~1.6.1",
     "mocha": "~1.11.0",
     "jsdom": "~0.6.5"
