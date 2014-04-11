@@ -67,7 +67,8 @@
     NProgress.status = (n === 1 ? null : n);
 
     var progress = NProgress.render(!started),
-        bar      = progress.querySelector(Settings.barSelector),
+        has_qs   = typeof progress.querySelector !== 'undefined',
+        bar      = has_qs ? progress.querySelector(Settings.barSelector) : null,
         speed    = Settings.speed,
         ease     = Settings.easing;
 
@@ -78,7 +79,8 @@
       if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
 
       // Add transition
-      css(bar, barPositionCSS(n, speed, ease));
+      if(has_qs)
+        css(bar, barPositionCSS(n, speed, ease));
 
       if (n === 1) {
         // Fade out
@@ -224,20 +226,23 @@
     progress.id = 'nprogress';
     progress.innerHTML = Settings.template;
 
-    var bar      = progress.querySelector(Settings.barSelector),
-        perc     = fromStart ? '-100' : toBarPerc(NProgress.status || 0),
-        spinner;
+    if(typeof progress.querySelector !== 'undefined')
+    {
+      var bar      = progress.querySelector(Settings.barSelector),
+          perc     = fromStart ? '-100' : toBarPerc(NProgress.status || 0),
+          spinner;
     
-    css(bar, {
-      transition: 'all 0 linear',
-      transform: 'translate3d(' + perc + '%,0,0)'
-    });
+      css(bar, {
+        transition: 'all 0 linear',
+        transform: 'translate3d(' + perc + '%,0,0)'
+      });
 
-    if (!Settings.showSpinner) {
-      spinner = progress.querySelector(Settings.spinnerSelector);
-      spinner && removeElement(spinner);
+      if (!Settings.showSpinner) {
+        spinner = progress.querySelector(Settings.spinnerSelector);
+        spinner && removeElement(spinner);
+      }
     }
-
+    
     document.body.appendChild(progress);
     return progress;
   };
