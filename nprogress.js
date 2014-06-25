@@ -31,6 +31,7 @@
     template: '<div class="bar" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>'
   };
 
+  // check IE
   var Sys = {};
   var ua = navigator.userAgent.toLowerCase();
   var s = ua.match(/msie ([\d.]+)/);
