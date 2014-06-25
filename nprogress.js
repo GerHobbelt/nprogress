@@ -31,6 +31,17 @@
     template: '<div class="bar" role="bar"><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>'
   };
 
+  var Sys = {};
+  var ua = navigator.userAgent.toLowerCase();
+  var s = ua.match(/msie ([\d.]+)/);
+  var isIE7 = false;
+  if (s) {
+      Sys.ie = s[1];
+  }
+  if (Sys.ie === '7.0') {
+      isIE7 = true;
+  }
+
   /**
    * Updates configuration.
    *
@@ -119,6 +130,9 @@
    *
    */
   NProgress.start = function() {
+    if (isIE7) {
+      return;
+    }
     if (!NProgress.status) NProgress.set(0);
 
     var work = function() {
