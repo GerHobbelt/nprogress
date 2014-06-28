@@ -94,15 +94,18 @@
     // Set positionUsing if it hasn't already been set
     if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
 
-    queue(function() {
+    var qf = function() {
       // Add transition
-      console.log('NProgress: ', n, speed, ease, toBarPerc(n));
+      console.log('NProgress: ', n, speed, ease, toBarPerc(n), document.readyState);
       css(bar, barPositionCSS(n, speed, ease));
 
       if (prmsg && msg != null) {
           prmsg.innerHTML = msg;
       }
-    });
+    };
+    qf.showingProgress = true;
+
+    queue(qf);
 
     if (n === 1) {
       queue(function() {
@@ -144,8 +147,8 @@
     // care for the handicapped...
     var myNav = navigator.userAgent.toLowerCase();
     if (myNav.indexOf('msie') != -1) {
-      NProgress.settings.showSpinner = false;
-      NProgress.settings.msgHasBackground = true;
+      Settings.showSpinner = false;
+      Settings.msgHasBackground = true;
     }
 
     if (!NProgress.status) NProgress.set(0, t);
@@ -447,7 +450,8 @@
         pending.shift();
         if (pending.length) {
           clearTimeout(timerHandle);
-          timerHandle = setTimeout(next, Settings.speed);
+          // when progressShowing functions are queued one after another, make sure they zip through very quickly:
+          timerHandle = setTimeout(next, Math.max(1, ((fn.showingProgress && pending[0].showingProgress) ? 0.05 : 1) * Settings.speed));
         } else {
           timerHandle = null;
         }
