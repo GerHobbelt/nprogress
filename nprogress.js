@@ -601,14 +601,17 @@
     if (selector.appendChild) {
       return selector;
     } 
-    var s = document.getElementById(selector);
-    if (!s) {
-      if (!root) {
-        root = document;
-      }
-      s = root.querySelector(selector);
+    if (!root) {
+      root = document;
     }
-    return s;
+    var s = '' + selector;
+    if (s.match(/^[a-z]+[\w:.-]*$/)) {
+      var node = root.querySelector('#' + s);
+      if (node) {
+        return node;
+      }
+    }
+    return root.querySelector(selector);
   };
 
   return NProgress;
