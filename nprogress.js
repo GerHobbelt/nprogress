@@ -1,5 +1,5 @@
-/*! NProgress (c) 2013, Rico Sta. Cruz
- *  http://ricostacruz.com/nprogress */
+/* NProgress, (c) 2013, 2014 Rico Sta. Cruz - http://ricostacruz.com/nprogress
+ * @license MIT */
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -21,7 +21,7 @@
     Internals: {}
   };
 
-  NProgress.version = '0.1.3';
+  NProgress.version = '0.1.6';
 
   var Settings = NProgress.settings = {
     minimum: 0.08,
