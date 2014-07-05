@@ -83,9 +83,9 @@
     }
 
     var progress = NProgress.render(!started),
-        bar      = II.findSubElementById(progress, Settings.barId),
+        bar      = II.findElementByAny(progress, Settings.barId),
         msg      = NProgress.msg,
-        prmsg    = II.findSubElementById(progress, Settings.msgId),
+        prmsg    = II.findElementByAny(progress, Settings.msgId),
         speed    = Settings.speed,
         ease     = Settings.easing;
 
@@ -213,7 +213,7 @@
   NProgress.showSpinner = function () {
     if (!Settings.showSpinner) {
       var progress = NProgress.render(),
-          spinner  = II.findSubElementById(progress, Settings.spinnerId);
+          spinner  = II.findElementByAny(progress, Settings.spinnerId);
       if (spinner) {
         spinner.style.display = 'block';
       }
@@ -228,7 +228,7 @@
   NProgress.hideSpinner = function () {
     if (!Settings.showSpinner) {
       var progress = NProgress.render(),
-          spinner  = II.findSubElementById(progress, Settings.spinnerId);
+          spinner  = II.findElementByAny(progress, Settings.spinnerId);
       if (spinner) {
         spinner.style.display = 'none';
       }
@@ -243,7 +243,7 @@
   NProgress.showBar = function () {
     if (!Settings.showBar) {
       var progress = NProgress.render(),
-          bar      = II.findSubElementById(progress, Settings.barId);
+          bar      = II.findElementByAny(progress, Settings.barId);
       if (bar) {
         bar.style.display = 'block';
       }
@@ -258,7 +258,7 @@
   NProgress.hideBar = function () {
     if (!Settings.showBar) {
       var progress = NProgress.render(),
-          bar      = II.findSubElementById(progress, Settings.barId);
+          bar      = II.findElementByAny(progress, Settings.barId);
       if (bar) {
         bar.style.display = 'none';
       }
@@ -314,9 +314,9 @@
     progress.id = 'nprogress';
     progress.innerHTML = Settings.template;
 
-    var bar      = II.findSubElementById(progress, Settings.barId),
+    var bar      = II.findElementByAny(progress, Settings.barId),
         n        = (fromStart ? -1 : (NProgress.status || 0)),
-        prmsg    = II.findSubElementById(progress, Settings.msgId),
+        prmsg    = II.findElementByAny(progress, Settings.msgId),
         spinner;
 
     // Set positionUsing if it hasn't already been set
@@ -329,13 +329,12 @@
     }
 
     if (!Settings.showSpinner) {
-      spinner = II.findSubElementById(progress, Settings.spinnerId);
+      spinner = II.findElementByAny(progress, Settings.spinnerId);
       spinner && II.removeElement(spinner);
       II.addClass(prmsg, 'msgRF');
     }
 
-    var parent = Settings.parent;
-    parent = (parent.appendChild ? [parent] : document.getElementsByTagName(parent))[0];
+    var parent = II.findElementByAny(document, Settings.parent);
     parent.appendChild(progress);
     II.addClass(parent, 'nprogress-parent');
 
@@ -347,8 +346,7 @@
    */
 
   NProgress.remove = function() {
-    var parent = Settings.parent;
-    parent = (parent.appendChild ? [parent] : document.getElementsByTagName(parent))[0];
+    var parent = II.findElementByAny(document, Settings.parent);
     II.removeClass(parent, 'nprogress-parent');
     II.removeClass(document.documentElement, 'nprogress-busy');
     var progress = document.getElementById('nprogress');
@@ -574,7 +572,7 @@
 
   II.classList = function (element) {
     return (' ' + (element.className || '') + ' ').replace(/\s+/gi, ' ');
-  }
+  };
 
   /**
    * (Internal) Removes an element from the DOM.
@@ -582,23 +580,21 @@
 
   II.removeElement = function (element) {
     element && element.parentNode && element.parentNode.removeChild(element);
-  }
+  };
 
-  II.findSubElementById = function (parent, id) {
-      for (var i = 0; i < parent.childNodes.length; i++) {
-          var ch = parent.childNodes[i];
-          if (ch.id === id){
-              return ch;
-          }
-
-          if (ch.childNodes && ch.childNodes.length) {
-              ch = II.findSubElementById(ch, id);
-              if (ch) return ch;
-          }
+  II.findElementByAny = function (root, selector) {
+    if (selector.appendChild) {
+      return selector;
+    } 
+    var s = document.getElementById(selector);
+    if (!s) {
+      if (!root) {
+        root = document;
       }
-
-      return null;
-  }
+      s = root.querySelector(selector);
+    }
+    return s;
+  };
 
   return NProgress;
 }));
