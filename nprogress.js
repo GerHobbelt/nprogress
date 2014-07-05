@@ -582,6 +582,21 @@
     element && element.parentNode && element.parentNode.removeChild(element);
   };
 
+  /**
+   * (Internal) Return the DOM node for the given `selector`.
+   *
+   * The `selector` can be:
+   *
+   * - **a DOM node** -- in which case this DOM node is immediately produced. 
+   *   This is useful when the user code already has a reference to the desired DOM node
+   *   and passes it via the NProgress options.
+   *
+   * - **an ID string** -- (without the leading '#')
+   *
+   * - **a query string** -- which identifies a single DOM node. (When it doesn't,
+   *   the first DOM node that matches will be produced as per 
+   *   https://developer.mozilla.org/en-US/docs/Web/API/document.querySelector)
+   */
   II.findElementByAny = function (root, selector) {
     if (selector.appendChild) {
       return selector;
