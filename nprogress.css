@@ -2,6 +2,8 @@
 
 /* #29d #8C001A */
 
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700,400italic);
+
 #nprogress {
   pointer-events: none;
 
@@ -49,7 +51,7 @@
     color: #8C001A;
     padding: 0px 6px 0px 6px;
     text-shadow: 0px 0px 8px #8C001A;
-    font-family: source sans pro, sans-serif;
+    font-family: "Source Sans Pro", sans-serif;
     line-height: 1.5;
 }
 

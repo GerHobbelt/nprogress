@@ -13,7 +13,7 @@ body {
 }
 
 body, td, input, textarea {
-  font-family: source sans pro, sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: #222;
