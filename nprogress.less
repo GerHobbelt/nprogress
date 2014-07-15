@@ -8,17 +8,26 @@
 
 #nprogress {
   pointer-events: none;
+
+  position: fixed;
+  z-index: @nprogress-z-index;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+
   .bar {
     background: @nprogress-color;
+
     position: absolute;
-    z-index: @nprogress-z-index;
     top: @nprogress-top;
     left: 0;
     right: 0;
     height: @nprogress-height;
   }
 
-  /* Fancy blur effect */
+  // Fancy blur effect
   .peg {
     display: block;
     position: absolute;
@@ -29,15 +38,14 @@
     box-shadow: 0 0 10px @nprogress-color, 0 0 5px @nprogress-color;
     opacity: 1.0;
 
-    -webkit-transform: rotate(3deg) translate(0px, -4px);
-        -ms-transform: rotate(3deg) translate(0px, -4px);
-            transform: rotate(3deg) translate(0px, -4px);
+    -webkit-transform: rotate(3deg);
+        -ms-transform: rotate(3deg);
+            transform: rotate(3deg);
   }
 
   .msg {
     display: block;
-    position: absolute;
-    z-index: @nprogress-z-index;
+    position: fixed;
     top: 9px;
     right: 42px;
     font-size: 18px;
@@ -57,11 +65,10 @@
     right: 4px;
   }
 
-/* Remove these to get rid of the spinner */
+// Remove these to get rid of the spinner
   .spinner {
     display: block;
     position: absolute;
-    z-index: @nprogress-z-index;
     top: @nprogress-spinner-top;
     right: @nprogress-spinner-right;
 
@@ -88,17 +95,26 @@
 }
 		      
 // and when the BODY is our parent, we nail ourselves to the top of the screen by FIXED position:
+body.nprogress-parent #nprogress,
 body.nprogress-parent #nprogress .bar,
 body.nprogress-parent #nprogress .spinner {
   position: fixed;
 }
 
 @-webkit-keyframes nprogress-spinner {
-  0%   { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 @keyframes nprogress-spinner {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
