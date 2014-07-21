@@ -58,7 +58,7 @@
           }
           return f;
         };
-        // Remove the targeted listener (if it is still present in the event listener set);
+        // Remove the targeted listener callback (if it is still present in the event listener set);
         // when no parameter or a non-function-type parameter is passed, it means *all* listeners
         // will be removed at once.
         f.removeEventListener = function (callback) {
@@ -91,14 +91,15 @@
             var fn = pending[0];
             fn();
             pending.shift();
+            clearTimeout(timerHandle);
             if (pending.length) {
-              clearTimeout(timerHandle);
               // when progressShowing functions are queued one after another, make sure they zip through very quickly:
               timerHandle = setTimeout(next, Math.max(1, ((fn.showingProgress && pending[0].showingProgress) ? 0.05 : 1) * Settings.speed));
             } else {
               timerHandle = null;
             }
           }
+          return q;
         }
 
         function q(fn) {
@@ -107,6 +108,7 @@
             clearTimeout(timerHandle);
             timerHandle = setTimeout(next, 1 /* Settings.speed */ ); // exec as fast as possible, but make sure subsequent callers in the same run do queue behind us --> timeout > 0
           }
+          return q;
         }
         q.next = next;
 
