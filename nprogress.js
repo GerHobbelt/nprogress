@@ -26,10 +26,10 @@
       generateFunctionRegister: function () {
         /* private */ var queue = [];
 
-        var f = function () {
+        var f = function (/* ...arguments */) {
           // invoke each registered event listener
           queue.forEach(function (callback) {
-            callback.call(f);
+            callback.apply(f, arguments);
           });
         };
 
