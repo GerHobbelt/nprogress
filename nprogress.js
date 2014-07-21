@@ -123,7 +123,7 @@
        * does not perform any manipulation of values prior to setting styles.
        */
 
-      css = function () {
+      css: function () {
         var cssPrefixes = [ 'Webkit', 'O', 'Moz', 'ms' ],
             cssProps    = {};
 
@@ -598,6 +598,7 @@
   // (Internal) Applies css properties to an element, similar to the jQuery css method.
   var css = II.css();
 
+  /**
    * (Internal) Determines if an element or space separated list of class names contains a class name.
    */
 

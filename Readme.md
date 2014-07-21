@@ -222,15 +222,15 @@ Public API
 
 - __`NProgress.settings`__: Direct access to the NProgress settings; see above for a comprehensive list of the available settings.
 
-- __`NProgress.configure(settings)`__: Update the NProgress settings. Preferably called before you start NProgress, but this is not mandatory. 
-  
+- __`NProgress.configure(settings)`__: Update the NProgress settings. Preferably called before you start NProgress, but this is not mandatory.
+
   Returns the NProgress instance for easy chaining:
 
   ```
   NProgress.configure({...}).start().set(0.01, 'blabla');
   ```
 
-- __`NProgress.set(n, msg)`__: Sets the progress bar status, where `n` is a number from `0.0` to `1.0`. 
+- __`NProgress.set(n, msg)`__: Sets the progress bar status, where `n` is a number from `0.0` to `1.0`.
 
   `msg` is an optional string which will be displayed below the progress bar. The message may contain HTML (innerHTML).
 
@@ -258,7 +258,7 @@ Public API
 
   `msg` is an optional string which will be displayed below the progress bar. The message may contain HTML (innerHTML).
 
-- __`NProgress.showSpinner()`__: Shows the spinner independently from the progress bar. 
+- __`NProgress.showSpinner()`__: Shows the spinner independently from the progress bar.
 
   Note: Whether this method delivers or not is controlled by the `NProgress.settings.showSpinner` setting.
 
@@ -292,13 +292,13 @@ These methods are also available for use by the application code, but these are 
 
 For (un)registering event listeners with NProgress this helper is available: you'll only need to call its `addEventListener` and/or `removeEventListener` methods when (un)registering your listeners with the `NProgress.settings.onDone` and `NProgress.settings.onDoneBefore` events.
 
-- __`NProgress.Internals.generateFunctionRegister()`__: Generator for the new addEventListener/removeEventListener API that sits on top of our events 
+- __`NProgress.Internals.generateFunctionRegister()`__: Generator for the new addEventListener/removeEventListener API that sits on top of our events
   (onDone & onDoneBefore).
-  
+
   This generator produces a function/class which offers these new addEventListener/removeEventListener methods; calling the generated object directly will invoke all registered handlers.
-   
+
   Example (pseudo)code:
-  
+
   ```
   // create new instance of event registrar
   var evtIF = NProgress.Internals.generateFunctionRegister();
@@ -310,7 +310,7 @@ For (un)registering event listeners with NProgress this helper is available: you
   // 'fire' the 'event': this will invoke registered callbacks `a` and `b`, where each will receive the `args` passed into evtIF:
   evtIF(args);
   ```
-  + __`NProgress.Internals.generateFunctionRegister().addEventListener(callback)`__: Add a callback/listener to the event; a la the DOM addEventListener, duplicate registrations are skipped. 
+  + __`NProgress.Internals.generateFunctionRegister().addEventListener(callback)`__: Add a callback/listener to the event; a la the DOM addEventListener, duplicate registrations are skipped.
 
     Returns a reference to the current function registrar instance.
 
@@ -323,7 +323,7 @@ For (un)registering event listeners with NProgress this helper is available: you
   + __`NProgress.Internals.queue(fn).next()`__: You can also trigger the dequeue-ing of the next queued function by invoking the `.next()` method directly.
 
   Example (pseudo)code:
- 
+
   ```
   // create a new queue instance:
   var q = NProgress.Internals.queue();
@@ -352,7 +352,7 @@ For (un)registering event listeners with NProgress this helper is available: you
   + __`css(element, properties)`__: apply the values to the given CSS properties listed in the `properties` object.
 
   Example (pseudo)code:
- 
+
   ```
   // create a new css instance:
   var css = NProgress.Internals.css();
@@ -393,21 +393,21 @@ Several methods which serve as a very minimal DOM abstraction layer:
 - __`NProgress.Internals.removeClass(element, name)`__: Removes a class from an element.
 
 - __`NProgress.Internals.classList(element)`__: Gets a space separated list of the class names on the element.
- 
+
   The list is wrapped with a single space on each end to facilitate finding matches within the list.
 
 - __`NProgress.Internals.removeElement(element)`__: Removes an element from the DOM.
 
 - __`NProgress.Internals.findElementByAny(root, selector)`__: Return the DOM node for the given `selector`.
-  
+
   The `selector` can be:
-  
+
   - **a DOM node** -- in which case this DOM node is immediately produced.
     This is useful when the user code already has a reference to the desired DOM node
     and passes it via the NProgress options.
-  
+
   - **an ID string** -- (without the leading '#')
-  
+
   - **a query string** -- which identifies a single DOM node. (When it doesn't,
     the first DOM node that matches will be produced as per
     https://developer.mozilla.org/en-US/docs/Web/API/document.querySelector)
