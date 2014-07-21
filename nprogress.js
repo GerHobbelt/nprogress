@@ -19,10 +19,28 @@
 }(this, function () {
   var NProgress = {
     Internals: {
-      // Generator for the new addEventListener/removeEventListener API that sits on top of our events 
-      // (onDone & onDoneBefore). This generator produces a function/class which offers these new
-      // addEventListener/removeEventListener methods; calling the generated object directly will invoke
-      // all registered handlers.
+      /**
+       * (Internal) Generator for the new addEventListener/removeEventListener API that sits on top of our events 
+       * (onDone & onDoneBefore).
+       *
+       * This generator produces a function/class which offers these new addEventListener/removeEventListener methods; 
+       * calling the generated object directly will invoke all registered handlers.
+       *
+       * 
+       * Example (pseudo)code:
+       *
+       * ```
+       * // create new instance of event registrar
+       * var evtIF = NProgress.Internals.generateFunctionRegister();
+       * ...
+       * // register callback(s):
+       * evtIF.addEventListener(a);
+       * evtIF.addEventListener(b);
+       * ...
+       * // 'fire' the 'event': this will invoke registered callbacks `a` and `b`, where each will receive the `args` passed into evtIF:
+       * evtIF(args);
+       * ```
+       */
       generateFunctionRegister: function () {
         /* private */ var queue = [];
 
@@ -57,8 +75,103 @@
         };
 
         return f; 
-      }
+      },
 
+      /**
+       * (Internal) Queues a function to be executed.
+       */
+
+      queue: function() {
+        var pending = [];
+        var timerHandle = null;
+
+        function next() {
+          // peek, then exec, then shift: this ensures any queue() calls inside fn() are indeed *queued* rather than executed immediately
+          if (pending.length) {
+            var fn = pending[0];
+            fn();
+            pending.shift();
+            if (pending.length) {
+              clearTimeout(timerHandle);
+              // when progressShowing functions are queued one after another, make sure they zip through very quickly:
+              timerHandle = setTimeout(next, Math.max(1, ((fn.showingProgress && pending[0].showingProgress) ? 0.05 : 1) * Settings.speed));
+            } else {
+              timerHandle = null;
+            }
+          }
+        }
+
+        function q(fn) {
+          pending.push(fn);
+          if (pending.length == 1) {
+            clearTimeout(timerHandle);
+            timerHandle = setTimeout(next, 1 /* Settings.speed */ ); // exec as fast as possible, but make sure subsequent callers in the same run do queue behind us --> timeout > 0
+          }
+        }
+        q.next = next;
+
+        return q;
+      },
+
+      /**
+       * (Internal) Applies css properties to an element, similar to the jQuery
+       * css method.
+       *
+       * While this helper does assist with vendor prefixed property names, it
+       * does not perform any manipulation of values prior to setting styles.
+       */
+
+      css = function () {
+        var cssPrefixes = [ 'Webkit', 'O', 'Moz', 'ms' ],
+            cssProps    = {};
+
+        function camelCase(string) {
+          return string.replace(/^-ms-/, 'ms-').replace(/-([\da-z])/gi, function(match, letter) {
+            return letter.toUpperCase();
+          });
+        }
+
+        function getVendorProp(name) {
+          var style = document.body.style;
+          if (name in style) return name;
+
+          var i = cssPrefixes.length,
+              capName = name.charAt(0).toUpperCase() + name.slice(1),
+              vendorName;
+          while (i--) {
+            vendorName = cssPrefixes[i] + capName;
+            if (vendorName in style) return vendorName;
+          }
+
+          return name;
+        }
+
+        function getStyleProp(name) {
+          name = camelCase(name);
+          return cssProps[name] || (cssProps[name] = getVendorProp(name));
+        }
+
+        function applyCss(element, prop, value) {
+          prop = getStyleProp(prop);
+          element.style[prop] = value;
+        }
+
+        function css(element, properties, value) {
+          var args = arguments,
+              prop;
+
+          if (args.length === 2) {
+            for (prop in properties) {
+              value = properties[prop];
+              if (value !== undefined && properties.hasOwnProperty(prop)) applyCss(element, prop, value);
+            }
+          } else {
+            applyCss(element, properties, value);
+          }
+        }
+        
+        return css;
+      }  
     }
   };
 
@@ -477,102 +590,12 @@
     return barCSS;
   }
 
-  /**
-   * (Internal) Queues a function to be executed.
-   */
+  // (Internal) Queues a function to be executed.
+  var queue = II.queue();
 
-  var queue = (function() {
-    var pending = [];
-    var timerHandle = null;
+  // (Internal) Applies css properties to an element, similar to the jQuery css method.
+  var css = II.css();
 
-    function next() {
-      // peek, then exec, then shift: this ensures any queue() calls inside fn() are indeed *queued* rather than executed immediately
-      if (pending.length) {
-        var fn = pending[0];
-        fn();
-        pending.shift();
-        if (pending.length) {
-          clearTimeout(timerHandle);
-          // when progressShowing functions are queued one after another, make sure they zip through very quickly:
-          timerHandle = setTimeout(next, Math.max(1, ((fn.showingProgress && pending[0].showingProgress) ? 0.05 : 1) * Settings.speed));
-        } else {
-          timerHandle = null;
-        }
-      }
-    }
-
-    function q(fn) {
-      pending.push(fn);
-      if (pending.length == 1) {
-        clearTimeout(timerHandle);
-        timerHandle = setTimeout(next, 1 /* Settings.speed */ ); // exec as fast as possible, but make sure subsequent callers in the same run do queue behind us --> timeout > 0
-      }
-    }
-    q.next = next;
-
-    return q;
-  })();
-
-  /**
-   * (Internal) Applies css properties to an element, similar to the jQuery
-   * css method.
-   *
-   * While this helper does assist with vendor prefixed property names, it
-   * does not perform any manipulation of values prior to setting styles.
-   */
-
-  var css = (function() {
-    var cssPrefixes = [ 'Webkit', 'O', 'Moz', 'ms' ],
-        cssProps    = {};
-
-    function camelCase(string) {
-      return string.replace(/^-ms-/, 'ms-').replace(/-([\da-z])/gi, function(match, letter) {
-        return letter.toUpperCase();
-      });
-    }
-
-    function getVendorProp(name) {
-      var style = document.body.style;
-      if (name in style) return name;
-
-      var i = cssPrefixes.length,
-          capName = name.charAt(0).toUpperCase() + name.slice(1),
-          vendorName;
-      while (i--) {
-        vendorName = cssPrefixes[i] + capName;
-        if (vendorName in style) return vendorName;
-      }
-
-      return name;
-    }
-
-    function getStyleProp(name) {
-      name = camelCase(name);
-      return cssProps[name] || (cssProps[name] = getVendorProp(name));
-    }
-
-    function applyCss(element, prop, value) {
-      prop = getStyleProp(prop);
-      element.style[prop] = value;
-    }
-
-    return function(element, properties) {
-      var args = arguments,
-          prop,
-          value;
-
-      if (args.length == 2) {
-        for (prop in properties) {
-          value = properties[prop];
-          if (value !== undefined && properties.hasOwnProperty(prop)) applyCss(element, prop, value);
-        }
-      } else {
-        applyCss(element, args[1], args[2]);
-      }
-    }
-  })();
-
-  /**
    * (Internal) Determines if an element or space separated list of class names contains a class name.
    */
 
