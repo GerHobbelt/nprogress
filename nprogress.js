@@ -20,13 +20,13 @@
   var NProgress = {
     Internals: {
       /**
-       * (Internal) Generator for the new addEventListener/removeEventListener API that sits on top of our events 
+       * (Internal) Generator for the new addEventListener/removeEventListener API that sits on top of our events
        * (onDone & onDoneBefore).
        *
-       * This generator produces a function/class which offers these new addEventListener/removeEventListener methods; 
+       * This generator produces a function/class which offers these new addEventListener/removeEventListener methods;
        * calling the generated object directly will invoke all registered handlers.
        *
-       * 
+       *
        * Example (pseudo)code:
        *
        * ```
@@ -58,7 +58,7 @@
           }
           return f;
         };
-        // Remove the targeted listener (if it is still present in the event listener set); 
+        // Remove the targeted listener (if it is still present in the event listener set);
         // when no parameter or a non-function-type parameter is passed, it means *all* listeners
         // will be removed at once.
         f.removeEventListener = function (callback) {
@@ -74,7 +74,7 @@
           return f;
         };
 
-        return f; 
+        return f;
       },
 
       /**
@@ -169,9 +169,9 @@
             applyCss(element, properties, value);
           }
         }
-        
+
         return css;
-      }  
+      }
     }
   };
 
@@ -231,9 +231,9 @@
     var started = NProgress.isStarted();
 
     n = clamp(n, Settings.minimum, 1);
-    // speed-up: when set() is called very often with the same progress perunage, 
+    // speed-up: when set() is called very often with the same progress perunage,
     // we simply ignore the multiple calls as long as they don't change anything.
-    if (!(started && NProgress.status === n && (t == null || NProgress.msg === t))) { 
+    if (!(started && NProgress.status === n && (t == null || NProgress.msg === t))) {
       NProgress.status = (n === 1 ? null : n);
       if (t != null) {
         NProgress.msg = t;
@@ -658,20 +658,20 @@
    *
    * The `selector` can be:
    *
-   * - **a DOM node** -- in which case this DOM node is immediately produced. 
+   * - **a DOM node** -- in which case this DOM node is immediately produced.
    *   This is useful when the user code already has a reference to the desired DOM node
    *   and passes it via the NProgress options.
    *
    * - **an ID string** -- (without the leading '#')
    *
    * - **a query string** -- which identifies a single DOM node. (When it doesn't,
-   *   the first DOM node that matches will be produced as per 
+   *   the first DOM node that matches will be produced as per
    *   https://developer.mozilla.org/en-US/docs/Web/API/document.querySelector)
    */
   II.findElementByAny = function (root, selector) {
     if (selector.appendChild) {
       return selector;
-    } 
+    }
     if (!root) {
       root = document;
     }

@@ -12,7 +12,7 @@
 
  * Bower: don't download package.json. Fixes browserify + jquery problem. (#65, @amelon)
  * Fix compatibility with Karma. (#75, @shaqq)
- 
+
 Internal changes:
 
  * Use SVG to display Travis-CI badge. (#77, @Mithgol)

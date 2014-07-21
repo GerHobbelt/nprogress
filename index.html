@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width">
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700,400italic' rel='stylesheet' type='text/css'>
-  
+
   <script src='nprogress.js'></script>
 </head>
 
@@ -74,10 +74,10 @@
 
     NProgress.settings.onDoneBegin = slow_fade_all_ends_all;
 
-    function tick() { 
-	  // NProgress.inc() will never arrive at 'done'all by itself as it won't push the .status beyond the 0.994 mark:
+    function tick() {
+      // NProgress.inc() will never arrive at 'done'all by itself as it won't push the .status beyond the 0.994 mark:
       if (NProgress.status > 0.99) {
-        NProgress.done(false, "Initial example animation completed"); 
+        NProgress.done(false, "Initial example animation completed");
 
         // slow_fade_all_ends_all(); <-- executed via NProgress.settings.onDoneBegin instead
       } else {
@@ -89,8 +89,8 @@
 
     function slow_fade_all_ends_all() {
       function slow_fade_one(el, i) {
-        setTimeout(function() { 
-          NProgress.Internals.removeClass(el, 'out'); 
+        setTimeout(function() {
+          NProgress.Internals.removeClass(el, 'out');
         }, i * 500);
       }
       var fade_el = body.getElementsByClassName('fade');
