@@ -18,11 +18,53 @@
     }
 }(this, function () {
   var NProgress = {
-    Internals: {}
+    Internals: {
+      // Generator for the new addEventListener/removeEventListener API that sits on top of our events 
+      // (onDone & onDoneBefore). This generator produces a function/class which offers these new
+      // addEventListener/removeEventListener methods; calling the generated object directly will invoke
+      // all registered handlers.
+      generateFunctionRegister: function () {
+        /* private */ var queue = [];
+
+        var f = function () {
+          // invoke each registered event listener
+          queue.forEach(function (callback) {
+            callback.call(f);
+          });
+        };
+
+        // Add a callback/listener to the event; a la the DOM addEventListener, duplicate registrations are skipped.
+        f.addEventListener = function (callback) {
+          if (typeof callback === 'function' && queue.indexOf(callback) === -1) {
+            queue.push(callback);
+          }
+          return f;
+        };
+        // Remove the targeted listener (if it is still present in the event listener set); 
+        // when no parameter or a non-function-type parameter is passed, it means *all* listeners
+        // will be removed at once.
+        f.removeEventListener = function (callback) {
+          if (typeof callback === 'function') {
+            var index = queue.indexOf(callback);
+            if (index !== -1) {
+              queue.splice(index, 1);
+            }
+          } else {
+            // kill all listeners
+            queue = [];
+          }
+          return f;
+        };
+
+        return f; 
+      }
+
+    }
   };
 
   NProgress.version = '0.1.6';
 
+  var II = NProgress.Internals;
   var Settings = NProgress.settings = {
     minimum: 0.08,
     easing: 'ease',
@@ -38,10 +80,9 @@
     msgId: 'nprogressmsg',
     msgHasBackground: false,
     template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>',
-    onDoneBegin: function () {},      // invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts
-    onDone: function () {}            // invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed
+    onDoneBegin: II.generateFunctionRegister(),      // invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts
+    onDone: II.generateFunctionRegister()            // invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed
   };
-  var II = NProgress.Internals;
 
   /**
    * Updates configuration.
@@ -460,13 +501,16 @@
       }
     }
 
-    return function(fn) {
+    function q(fn) {
       pending.push(fn);
       if (pending.length == 1) {
-        if (timerHandle) { debugger; }
+        clearTimeout(timerHandle);
         timerHandle = setTimeout(next, 1 /* Settings.speed */ ); // exec as fast as possible, but make sure subsequent callers in the same run do queue behind us --> timeout > 0
       }
-    };
+    }
+    q.next = next;
+
+    return q;
   })();
 
   /**
