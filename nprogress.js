@@ -77,56 +77,60 @@
     var started = NProgress.isStarted();
 
     n = clamp(n, Settings.minimum, 1);
-    NProgress.status = (n === 1 ? null : n);
-    if (t != null) {
-      NProgress.msg = t;
-    }
-
-    var progress = NProgress.render(!started),
-        bar      = II.findElementByAny(progress, Settings.barId),
-        msg      = NProgress.msg,
-        prmsg    = II.findElementByAny(progress, Settings.msgId),
-        speed    = Settings.speed,
-        ease     = Settings.easing;
-
-    progress.offsetWidth; /* Repaint */
-
-    // Set positionUsing if it hasn't already been set
-    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
-
-    var qf = function() {
-      // Add transition
-      console.log('NProgress: ', n, speed, ease, toBarPerc(n), document.readyState);
-      css(bar, barPositionCSS(n, speed, ease));
-
-      if (prmsg && msg != null) {
-          prmsg.innerHTML = msg;
+    // speed-up: when set() is called very often with the same progress perunage, 
+    // we simply ignore the multiple calls as long as they don't change anything.
+    if (!(started && NProgress.status === n && (t == null || NProgress.msg === t))) { 
+      NProgress.status = (n === 1 ? null : n);
+      if (t != null) {
+        NProgress.msg = t;
       }
-    };
-    qf.showingProgress = true;
 
-    queue(qf);
+      var progress = NProgress.render(!started),
+          bar      = II.findElementByAny(progress, Settings.barId),
+          msg      = NProgress.msg,
+          prmsg    = II.findElementByAny(progress, Settings.msgId),
+          speed    = Settings.speed,
+          ease     = Settings.easing;
 
-    if (n === 1) {
-      queue(function() {
-        Settings.onDoneBegin();
+      progress.offsetWidth; /* Repaint */
 
-        // Fade out
-        css(progress, {
-          transition: 'none',
-          opacity: 1
+      // Set positionUsing if it hasn't already been set
+      if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+
+      var qf = function() {
+        // Add transition
+        console.log('NProgress: ', n, speed, ease, toBarPerc(n), document.readyState);
+        css(bar, barPositionCSS(n, speed, ease));
+
+        if (prmsg && msg != null) {
+            prmsg.innerHTML = msg;
+        }
+      };
+      qf.showingProgress = true;
+
+      queue(qf);
+
+      if (n === 1) {
+        queue(function() {
+          Settings.onDoneBegin();
+
+          // Fade out
+          css(progress, {
+            transition: 'none',
+            opacity: 1
+          });
         });
-      });
-      queue(function() {
-        css(progress, {
-          transition: 'all ' + speed + 'ms linear',
-          opacity: 0
+        queue(function() {
+          css(progress, {
+            transition: 'all ' + speed + 'ms linear',
+            opacity: 0
+          });
         });
-      });
-      queue(function() {
-          NProgress.remove();
-          Settings.onDone();
-      });
+        queue(function() {
+            NProgress.remove();
+            Settings.onDone();
+        });
+      }
     }
 
     return this;
