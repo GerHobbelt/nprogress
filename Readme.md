@@ -37,8 +37,8 @@ NProgress.start();  or NProgress.start("Uploading data");
 NProgress.done();
 ~~~
 
-Using [Turbolinks] or similar? Ensure you're using Turbolinks 1.3.0+, and use 
-this: (explained 
+Using [Turbolinks] or similar? Ensure you're using Turbolinks 1.3.0+, and use
+this: (explained
     [here](https://github.com/rstacruz/nprogress/issues/8#issuecomment-23010560))
 
 ~~~ js
@@ -73,8 +73,8 @@ increments it with a random amount. This will never get to 100%: use it for
 every image load (or similar).
 
 ~~~ js
-NProgress.inc();   
-NProgress.inc("default", "A little more"); 
+NProgress.inc();
+NProgress.inc("default", "A little more");
 NProgress.inc(0.2, "20% more");
 ~~~
 
@@ -92,7 +92,11 @@ even if it's not being shown. (The default behavior is that *.done()* will not
 NProgress.done(true);
 ~~~
 
-__Get the status value:__ To get the status value, use `.status`
+__Get the status value:__ To get the status value, use `.status`. The status value is `null` when
+the progress bar is not being shown, otherwise the status value will be the last perunage set via
+`.set()` (and `.inc()`)
+
+
 
 Configuration
 -------------
@@ -131,7 +135,7 @@ NProgress.configure({ trickle: false });
 ~~~
 
 #### `trickleRate` and `trickleSpeed`
-You can adjust the *trickleRate* (how much to increase per trickle) and 
+You can adjust the *trickleRate* (how much to increase per trickle) and
 *trickleSpeed* (how often to trickle, in ms).
 
 ~~~ js
@@ -155,8 +159,8 @@ NProgress.configure({ parent: '#container' });
 Customization
 -------------
 
-Just edit `nprogress.css` to your liking. Tip: you probably only want to find
-and replace occurances of `#29d`.
+Just edit `variables.less` or `nprogress.less` (which are used to produce `nprogress.css`) to your liking. Tip: you probably only want to find
+and replace occurrences of `#29d`.
 
 The included CSS file is pretty minimal... in fact, feel free to scrap it and
 make your own!
@@ -178,7 +182,7 @@ __Questions__: ask them at StackOverflow with the tag *nprogress*.<br>
 __Chat__: join us at gitter.im.<br>
 [![Chat](http://img.shields.io/badge/gitter-rstacruz / nprogress-brightgreen.svg)]( https://gitter.im/rstacruz/nprogress )
 
-[default template]: 
+[default template]:
 https://github.com/rstacruz/nprogress/blob/master/nprogress.js#L31
 [Turbolinks]: https://github.com/rails/turbolinks
 [nprogress.js]: http://ricostacruz.com/nprogress/nprogress.js
@@ -197,5 +201,5 @@ Authored and maintained by Rico Sta. Cruz with help from [contributors].
 [MIT License]: http://mit-license.org/
 [contributors]: http://github.com/rstacruz/jsfuse/contributors
 
-[![Status](https://api.travis-ci.org/rstacruz/nprogress.svg?branch=master)](http://travis-ci.org/rstacruz/nprogress) 
+[![Status](https://api.travis-ci.org/rstacruz/nprogress.svg?branch=master)](http://travis-ci.org/rstacruz/nprogress)
 [![npm version](https://img.shields.io/npm/v/nprogress.png)](https://npmjs.org/package/nprogress "View this project on npm")
