@@ -14,10 +14,12 @@
 
 <body style='display: none'>
   <header class='page-header'>
-    <span class='nprogress-logo fade out'></span>
-    <h1>NProgress<i>.js</i></h1>
-    <p class='fade out brief big'>A nanoscopic progress bar. Featuring realistic
-    trickle animations to convince your users that something is happening!</p>
+    <div class='hcenter'>
+      <span class='nprogress-logo fade out'></span>
+      <h1>NProgress<i>.js</i></h1>
+      <p class='fade out brief big'>A nanoscopic progress bar. Featuring realistic
+      trickle animations to convince your users that something is happening!</p>
+    </div>
   </header>
 
   <div class='contents fade out'>
@@ -72,7 +74,8 @@
     }
     NProgress.start("Hello World...");
 
-    NProgress.settings.onDoneBegin = slow_fade_all_ends_all;
+    NProgress.settings.onDoneBegin.addEventListener(slow_fade_all_ends_all);
+    NProgress.settings.onDone.addEventListener(prep_for_interactive_demo);
 
     function tick() {
       // NProgress.inc() will never arrive at 'done'all by itself as it won't push the .status beyond the 0.994 mark:
@@ -97,6 +100,16 @@
       for (var i = fade_el.length; i-- > 0; ) {
         slow_fade_one(fade_el[i], i);
       }
+    }
+
+    // This function is invoked AFTER the previous NProgress instance has been removed from the DOM, 
+    // hence we're perfectly safe when switching the NProgress 'parent' DOM node.
+    // 
+    // Here we switch to a DOM node that's not 'body' itself to showcase the progressbar interactively.
+    function prep_for_interactive_demo() {
+      NProgress.configure({
+        parent: '.page-header'
+      });
     }
   </script>
 </body>

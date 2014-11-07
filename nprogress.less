@@ -9,12 +9,15 @@
 #nprogress {
   pointer-events: none;
 
-  position: fixed;
+  position: absolute;
   z-index: @nprogress-z-index;
+
+  // take the entire size of the parent:
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+
   background: white;
 
   .bar {
@@ -45,7 +48,7 @@
 
   .msg {
     display: block;
-    position: fixed;
+    position: absolute;
     top: 9px;
     right: 42px;
     font-size: 18px;

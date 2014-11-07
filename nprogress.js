@@ -183,7 +183,7 @@
   var Settings = NProgress.settings = {
     minimum: 0.08,
     easing: 'ease',
-    positionUsing: '',
+    positionUsing: '',    // translate3d | translate | ...
     speed: 200,
     trickle: true,
     trickleRate: 0.02,
@@ -236,7 +236,7 @@
     // speed-up: when set() is called very often with the same progress perunage,
     // we simply ignore the multiple calls as long as they don't change anything.
     if (!(started && NProgress.status === n && (t == null || NProgress.msg === t))) {
-      NProgress.status = (n === 1 ? null : n);
+      NProgress.status = n;
       if (t != null) {
         NProgress.msg = t;
       }
@@ -328,7 +328,7 @@
 
   /**
    * Hides the progress bar.
-   * This is the *sort of* the same as setting the status to 100%, with the
+   * This is *sort of* the same as setting the status to 100%, with the
    * difference being `done()` makes some placebo effect of some realistic motion.
    *
    *     NProgress.done();
@@ -493,7 +493,7 @@
       spinner && II.removeElement(spinner);
       II.addClass(prmsg, 'msgRF');
     }
-    $el.appendTo(document.body);
+
     var parent = II.findElementByAny(document, Settings.parent);
     parent.appendChild(progress);
     II.addClass(parent, 'nprogress-parent');
