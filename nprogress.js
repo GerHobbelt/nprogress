@@ -493,7 +493,7 @@
       spinner && II.removeElement(spinner);
       II.addClass(prmsg, 'msgRF');
     }
-
+    $el.appendTo(document.body);
     var parent = II.findElementByAny(document, Settings.parent);
     parent.appendChild(progress);
     II.addClass(parent, 'nprogress-parent');

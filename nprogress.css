@@ -1,7 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700,400italic);
 #nprogress {
   pointer-events: none;
-  position: fixed;
+  position: fixed;  /* set this to absolute to use with a containerElement */
   z-index: 2014;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
 }
 #nprogress .bar {
   background: #8c001a;
-  position: absolute;
+  position: fixed;  /* set this to absolute to use with a containerElement */
   top: 0;
   left: 0;
   right: 0;
@@ -32,7 +32,7 @@
 }
 #nprogress .msg {
   display: block;
-  position: fixed;
+  position: fixed; /* set this to absolute to use with a containerElement */
   top: 9px;
   right: 42px;
   font-size: 18px;
