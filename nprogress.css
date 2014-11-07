@@ -12,6 +12,7 @@
 #nprogress .bar {
   background: #8c001a;
   position: fixed;  /* set this to absolute to use with a containerElement */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
