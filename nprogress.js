@@ -255,7 +255,7 @@
 
       var qf = function() {
         // Add transition
-        console.log('NProgress: ', n, speed, ease, toBarPerc(n), document.readyState);
+        //console.log('NProgress: ', n, speed, ease, toBarPerc(n), document.readyState);
         css(bar, barPositionCSS(n, speed, ease));
 
         if (prmsg && msg != null) {
