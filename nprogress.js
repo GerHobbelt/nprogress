@@ -104,7 +104,7 @@
 
         function q(fn) {
           pending.push(fn);
-          if (pending.length == 1) {
+          if (pending.length === 1) {
             clearTimeout(timerHandle);
             timerHandle = setTimeout(next, 1 /* Settings.speed */ ); // exec as fast as possible, but make sure subsequent callers in the same run do queue behind us --> timeout > 0
           }
@@ -306,7 +306,7 @@
   NProgress.start = function(t) {
     // care for the handicapped...
     var myNav = navigator.userAgent.toLowerCase();
-    if (myNav.indexOf('msie') != -1) {
+    if (myNav.indexOf('msie') !== -1) {
       Settings.showSpinner = false;
       Settings.msgHasBackground = true;
     }
@@ -603,7 +603,7 @@
    */
 
   II.hasClass = function (element, name) {
-    var list = typeof element == 'string' ? element : II.classList(element);
+    var list = typeof element === 'string' ? element : II.classList(element);
     return list.indexOf(' ' + name + ' ') >= 0;
   }
 
