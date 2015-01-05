@@ -242,6 +242,9 @@
         NProgress.msg = t;
       }
 
+    // Set positionUsing if it hasn't already been set
+    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+
       var progress = NProgress.render(!started),
           bar      = II.findElementByAny(progress, Settings.barId),
           msg      = NProgress.msg,
@@ -250,9 +253,6 @@
           ease     = Settings.easing;
 
       progress.offsetWidth; /* Repaint */
-
-      // Set positionUsing if it hasn't already been set
-      if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
 
       var qf = function() {
         // Add transition
