@@ -364,7 +364,9 @@
       return NProgress.start(t);
     } else {
       if (typeof amount !== 'number') {
-        amount = (1 - n) * clamp(Math.random() * n, 0.1, Settings.maximum - 0.05);
+        // Do not increment beyond the configured 'maximum'; gradually increase towards that maximum
+        // but never reach it. (See also issue #4.)
+        amount = Math.max(0, Settings.maximum - n) * clamp(Math.random() * 0.1, 0.05 /* minimum growth rate */, 1 - 0.05);
       }
 
       n = clamp(n + amount, 0, Settings.maximum - 0.006);
