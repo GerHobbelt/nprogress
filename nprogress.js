@@ -190,6 +190,7 @@
     trickle: true,
     trickleRate: 0.02,
     trickleSpeed: 800,
+    incMaxRate: 0.1,         // inc() calls maximum allowed growth rate
     showSpinner: true,
     parent: 'body',
     barId: 'nprogressbar',
@@ -366,7 +367,7 @@
       if (typeof amount !== 'number') {
         // Do not increment beyond the configured 'maximum'; gradually increase towards that maximum
         // but never reach it. (See also issue #4.)
-        amount = Math.max(0, Settings.maximum - n) * clamp(Math.random() * 0.1, 0.05 /* minimum growth rate */, 1 - 0.05);
+        amount = Math.max(0, Settings.maximum - n) * clamp(Math.random() * Settings.incMaxRate, 0.05 /* minimum growth rate */, 1 - 0.05 /* absolute maximum growth rate */);
       }
 
       n = clamp(n + amount, 0, Settings.maximum - 0.006);
