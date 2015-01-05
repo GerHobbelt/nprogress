@@ -1,0 +1,4 @@
+/* prevent webkit flicker when Nprogress.js nprogress.done() is called */
+html {
+  -webkit-backface-visibility: hidden;
+}
