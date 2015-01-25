@@ -1,13 +1,17 @@
 (function() {
-  if (typeof module === 'object') require('./setup');
-  var w = this;
+  if (typeof process === 'object') {
+    require('mocha-jsdom')();
+  }
 
-  testSuite('NProgress', function() {
+  var root = this;
+  var assert = (root.chai || require('chai')).assert;
+
+  describe('NProgress', function() {
     var $, NProgress;
 
     beforeEach(function() {
-      $ = w.jQuery || require('jquery');
-      NProgress = w.NProgress || require('nprogress');
+      $ = root.jQuery || require('jquery');
+      NProgress = root.NProgress || require('../nprogress');
 
       this.settings = $.extend({}, NProgress.settings);
     });
@@ -71,6 +75,14 @@
         NProgress.start();
         assert.equal(NProgress.status, NProgress.settings.minimum);
       });
+
+      it('must be attached to specified parent', function() {
+        var test = $('<div>', {id: 'test'}).appendTo('body');
+        NProgress.configure({parent: '#test'});
+        NProgress.start();
+        assert.isTrue($("#nprogress").parent().is(test));
+        assert.isTrue($(NProgress.settings.parent).hasClass("nprogress-custom-parent"));
+      });
     });
 
     // ----
@@ -86,6 +98,19 @@
         NProgress.done(true);
         assert.equal($("#nprogress").length, 1);
         done();
+      });
+    });
+
+    // ----
+
+    describe('.remove()', function() {
+      it('should be removed from the parent', function() {
+        NProgress.set(1);
+        NProgress.remove();
+
+        var parent = $(NProgress.settings.parent);
+        assert.isFalse(parent.hasClass('nprogress-custom-parent'));
+        assert.equal(parent.find('#nprogress').length, 0);
       });
     });
 
