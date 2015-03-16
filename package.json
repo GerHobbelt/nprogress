@@ -21,5 +21,25 @@
     "mocha-jsdom": ">=0.2.0",
     "less": ">=2.2.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "jspm": {
+    "format": "global",
+    "shim": {
+      "nprogress": {
+        "deps": ["./nprogress.css!"]
+      }
+    },
+    "dependencies": {
+      "css": "*"
+    }
+  },
+  "spm": {
+    "main": "nprogress.js",
+    "output": ["nprogress.css"],
+    "ignore": [
+      "support",
+      "test",
+      "vendor"
+    ]
+  }
 }
