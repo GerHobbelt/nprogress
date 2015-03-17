@@ -1,4 +1,4 @@
-/*! NProgress (c) 2013, 2014, Rico Sta. Cruz
+/*! NProgress (c) 2013-2015, Rico Sta. Cruz
  * http://ricostacruz.com/nprogress
  * @license MIT */
 
@@ -59,6 +59,7 @@
           }
           return f;
         };
+
         // Remove the targeted listener callback (if it is still present in the event listener set);
         // when no parameter or a non-function-type parameter is passed, it means *all* listeners
         // will be removed at once.
@@ -81,8 +82,7 @@
       /**
        * (Internal) Queues a function to be executed.
        */
-
-      queue: function() {
+      queue: function () {
         var pending = [];
         var timerHandle = null;
 
@@ -123,13 +123,12 @@
        * While this helper does assist with vendor prefixed property names, it
        * does not perform any manipulation of values prior to setting styles.
        */
-
       css: function () {
         var cssPrefixes = [ 'Webkit', 'O', 'Moz', 'ms' ],
             cssProps    = {};
 
         function camelCase(string) {
-          return string.replace(/^-ms-/, 'ms-').replace(/-([\da-z])/gi, function(match, letter) {
+          return string.replace(/^-ms-/, 'ms-').replace(/-([\da-z])/gi, function (match, letter) {
             return letter.toUpperCase();
           });
         }
@@ -184,13 +183,14 @@
   var Settings = NProgress.settings = {
     minimum: 0.08,
     maximum: 1,
+    topHoldOff: 0.006,        // the progress perunage amount to 'stay away' from 1.0 (i.e. completion) until the caller signals the job is `.done()`
     easing: 'ease',
-    positionUsing: '',    // translate3d | translate | ...
+    positionUsing: '',        // translate3d | translate | ...
     speed: 200,
     trickle: true,
     trickleRate: 0.02,
     trickleSpeed: 800,
-    incMaxRate: 0.1,         // inc() calls maximum allowed growth rate
+    incMaxRate: 0.1,          // inc() calls maximum allowed growth rate
     showSpinner: true,
     parent: 'body',
     barId: 'nprogressbar',
@@ -198,8 +198,9 @@
     msgId: 'nprogressmsg',
     msgHasBackground: false,
     template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>',
-    onDoneBegin: II.generateFunctionRegister(),      // invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts
-    onDone: II.generateFunctionRegister()            // invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed
+    onDoneBegin: II.generateFunctionRegister(),      // Invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts.
+    onDone: II.generateFunctionRegister(),           // Invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed.
+    onTrickle: II.generateFunctionRegister()         // Invoked every time after the progress bar has been updated. May be used to perform custom at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed.
   };
 
   /**
@@ -209,7 +210,7 @@
    *       minimum: 0.1
    *     });
    */
-  NProgress.configure = function(options) {
+  NProgress.configure = function (options) {
     var key, value;
     for (key in options) {
       value = options[key];
@@ -220,10 +221,19 @@
   };
 
   /**
-   * Last number.
+   * Last status (number).
    */
-
   NProgress.status = null;
+
+  /**
+   * Last status message (string).
+   */
+  NProgress.msg = null;
+
+  /**
+   * Has an error been signaled? (truthy value)
+   */
+  NProgress.signaled = false;
 
   /**
    * Sets the progress bar status, where `n` is a number from `0.0` to `1.0`.
@@ -235,7 +245,7 @@
    * the visual effects (and accompanying delay in executing the `onDone` callbacks), hence
    * `NProgress.set(1.0)` serves as the *fast* version of `NProgress.done()`.  
    */
-  NProgress.set = function(n, t) {
+  NProgress.set = function (n, t) {
     var started = NProgress.isStarted();
 
     n = clamp(n, Settings.minimum, 1);
@@ -243,12 +253,16 @@
     // we simply ignore the multiple calls as long as they don't change anything.
     if (!(started && NProgress.status === n && (t == null || NProgress.msg === t))) {
       NProgress.status = n;
+      if (n === 0) {
+        NProgress.signaled = false;
+        NProgress.msg = null;
+      }
       if (t != null) {
         NProgress.msg = t;
       }
 
-    // Set positionUsing if it hasn't already been set
-    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+      // Set positionUsing if it hasn't already been set
+      if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
 
       var progress = NProgress.render(!started),
           bar      = II.findElementByAny(progress, Settings.barId),
@@ -259,9 +273,8 @@
 
       progress.offsetWidth; /* Repaint */
 
-      var qf = function() {
+      var qf = function () {
         // Add transition
-        //console.log('NProgress: ', n, speed, ease, toBarPerc(n), document.readyState);
         css(bar, barPositionCSS(n, speed, ease));
 
         if (prmsg && msg != null) {
@@ -273,7 +286,7 @@
       queue(qf);
 
       if (n === 1) {
-        queue(function() {
+        queue(function () {
           Settings.onDoneBegin();
 
           // Fade out
@@ -282,15 +295,19 @@
             opacity: 1
           });
         });
-        queue(function() {
+        queue(function () {
           css(progress, {
             transition: 'all ' + speed + 'ms linear',
             opacity: 0
           });
         });
-        queue(function() {
-            NProgress.remove();
-            Settings.onDone();
+        queue(function () {
+          NProgress.remove();
+          Settings.onDone();
+        });
+      } else {
+        queue(function () {
+          Settings.onTrickle();
         });
       }
     }
@@ -302,7 +319,7 @@
    * Return TRUE when the progressbar is active, i.e. when `NProgress.start()` has been called 
    * but neither `NProgress.set(1.0)` nor `NProgress.done()` have been reached yet.
    */
-  NProgress.isStarted = function() {
+  NProgress.isStarted = function () {
     return typeof NProgress.status === 'number';
   };
 
@@ -312,8 +329,10 @@
    *
    * Returns the newly configured `maximum` value.
    */
-  NProgress.max = function(maximum) {
-    if (typeof maximum === 'number' && isFinite(maximum) && maximum > Settings.minimum) Settings.maximum = clamp(maximum, 0, 1);
+  NProgress.max = function (maximum) {
+    if (typeof maximum === 'number' && isFinite(maximum) && maximum > Settings.minimum) {
+      Settings.maximum = clamp(maximum, 0, 1);
+    }
     return Settings.maximum;
   };
 
@@ -324,7 +343,7 @@
    *     NProgress.start();
    *
    */
-  NProgress.start = function(t) {
+  NProgress.start = function (t) {
     // care for the handicapped...
     var myNav = navigator.userAgent.toLowerCase();
     if (myNav.indexOf('msie') !== -1) {
@@ -332,17 +351,21 @@
       Settings.msgHasBackground = true;
     }
 
-    if (!NProgress.status) NProgress.set(0, t);
+    if (!NProgress.isStarted()) {
+      NProgress.set(0, t);
+    }
 
-    var work = function() {
-      setTimeout(function() {
-        if (!NProgress.status) return;
+    var work = function () {
+      setTimeout(function () {
+        if (!NProgress.isStarted()) return;
         NProgress.trickle();
         work();
       }, Settings.trickleSpeed);
     };
 
-    if (Settings.trickle) work();
+    if (Settings.trickle) {
+      work();
+    }
 
     return this;
   };
@@ -354,12 +377,13 @@
    *
    *     NProgress.done();
    *
-   * If `true` is passed, it will show the progress bar even if it's hidden.
+   * If `true` is passed in the `force` parameter, it will show the progress bar 
+   * even if it was previously hidden.
    *
    *     NProgress.done(true);
    */
-  NProgress.done = function(force, t) {
-    if (!force && !NProgress.status) return this;
+  NProgress.done = function (force, t) {
+    if (!force && !NProgress.isStarted()) return this;
 
     return NProgress.inc(0.3 + 0.5 * Math.random(), t).set(1);
   };
@@ -367,10 +391,10 @@
   /**
    * Increments by a random amount.
    */
-  NProgress.inc = function(amount, t) {
+  NProgress.inc = function (amount, t) {
     var n = NProgress.status;
 
-    if (!n) {
+    if (!NProgress.isStarted()) {
       return NProgress.start(t);
     } else {
       if (typeof amount !== 'number') {
@@ -379,7 +403,7 @@
         amount = Math.max(0, Settings.maximum - n) * clamp(Math.random() * Settings.incMaxRate, 0.05 /* minimum growth rate */, 1 - 0.05 /* absolute maximum growth rate */);
       }
 
-      n = clamp(n + amount, 0, Settings.maximum - 0.006);
+      n = clamp(n + amount, 0, Settings.maximum - Settings.topHoldOff);
       return NProgress.set(n, t);
     }
   };
@@ -389,8 +413,26 @@
    * while another process is working and we wish to provide the user with some visual 'progress'
    * feedback while we do not know the exact 'progress' of the process currently running.
    */
-  NProgress.trickle = function(t) {
+  NProgress.trickle = function (t) {
     return NProgress.inc(Math.random() * Settings.trickleRate, t);
+  };
+
+  /**
+   * Signal to NProgress that a 'fatal' error has occurred and that the progress should *not*
+   * ever be completed.
+   *
+   * This 'signaled state' can be reset by resetting the NProgress progress bar by calling the
+   * `.start()` or `.set(0, ...)` APIs, which will restart the progress bar.
+   */
+  NProgress.signal = function (signaled_state, msg) {
+    // Ignore any errors signaled *before* we `.start()`:
+    if (!NProgress.isStarted()) return this;
+
+    NProgress.signaled = signaled_state || true;
+
+    // Add a non-zero increment to cope with the edge case when the progress bar 
+    // has just been started/reset and an error is signaled *immediately*:
+    return NProgress.inc(1e-6, msg);
   };
 
   /**
@@ -462,7 +504,7 @@
    *
    * @param $promise jQUery Promise
    */
-  NProgress.promise = function($promise) {
+  NProgress.promise = function ($promise) {
     if (!$promise || $promise.state() === 'resolved') {
       return this;
     }
@@ -474,7 +516,7 @@
     initial++;
     current++;
 
-    $promise.always(function() {
+    $promise.always(function () {
       current--;
       if (current === 0) {
           initial = 0;
@@ -491,7 +533,7 @@
    * (Internal) renders the progress bar markup based on the `template`
    * setting.
    */
-  NProgress.render = function(fromStart) {
+  NProgress.render = function (fromStart) {
     if (NProgress.isRendered()) return document.getElementById('nprogress');
 
     II.addClass(document.documentElement, 'nprogress-busy');
@@ -516,7 +558,7 @@
 
     if (!Settings.showSpinner) {
       spinner = II.findElementByAny(progress, Settings.spinnerId);
-      spinner && II.removeElement(spinner);
+      if (spinner) II.removeElement(spinner);
       II.addClass(prmsg, 'msgRF');
     }
 
@@ -530,14 +572,20 @@
   /**
    * Removes the element. Opposite of render().
    */
-  NProgress.remove = function() {
+  NProgress.remove = function () {
     var parent = II.findElementByAny(document, Settings.parent);
     II.removeClass(parent, 'nprogress-parent');
     II.removeClass(document.documentElement, 'nprogress-busy');
     var progress = document.getElementById('nprogress');
-    progress && II.removeElement(progress);
+    if (progress) II.removeElement(progress);
 
     NProgress.status = null;
+    //NProgress.signaled = false;  -- keep the signaled state intact: it can only be reset by 
+    //                                calling either `.start()` or the `.set(0, ...)` APIs!
+    //                                That way we have a signaled state info still available
+    //                                by the time the user callbacks are invoked by the `onDone`
+    //                                event handler.
+    NProgress.msg = null;
 
     return this;
   };
@@ -545,14 +593,14 @@
   /**
    * Checks if the progress bar is rendered.
    */
-  NProgress.isRendered = function() {
+  NProgress.isRendered = function () {
     return !!document.getElementById('nprogress');
   };
 
   /**
    * Determine which positioning CSS rule to use.
    */
-  NProgress.getPositioningCSS = function() {
+  NProgress.getPositioningCSS = function () {
     // Sniff on document.body.style
     var bodyStyle = document.body.style;
 
@@ -674,7 +722,7 @@
    * (Internal) Removes an element from the DOM.
    */
   II.removeElement = function (element) {
-    element && element.parentNode && element.parentNode.removeChild(element);
+    if (element && element.parentNode) element.parentNode.removeChild(element);
   };
 
   /**

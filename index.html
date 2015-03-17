@@ -46,6 +46,12 @@
         increments by a little
       </p>
       <p>
+        <button class='button play' id='b-err' onclick='NProgress.signal();'></button>
+        <i>NProgress</i><b>.signal()</b>
+        &mdash;
+        signal an error in the user code
+      </p>
+      <p>
         <button class='button play' id='b-100' onclick='NProgress.done();'></button>
         <i>NProgress</i><b>.done()</b>
         &mdash;
@@ -81,7 +87,7 @@
     NProgress.settings.onDone.addEventListener(prep_for_interactive_demo);
 
     function tick() {
-      // NProgress.inc() will never arrive at 'done'all by itself as it won't push the .status beyond the 0.994 mark:
+      // NProgress.inc() will never arrive at 'done' all by itself as it won't push the .status beyond the 0.994 mark:
       if (NProgress.status > 0.99) {
         NProgress.done(false, "Initial example animation completed");
 
