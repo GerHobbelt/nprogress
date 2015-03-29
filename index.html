@@ -46,7 +46,7 @@
         increments by a little
       </p>
       <p>
-        <button class='button play' id='b-err' onclick='NProgress.signal();'></button>
+        <button class='button play' id='b-err' onclick='NProgress.signal({ foo: "bar" }, "signaled the error state!");'></button>
         <i>NProgress</i><b>.signal()</b>
         &mdash;
         signal an error in the user code
@@ -81,20 +81,23 @@
     for (var i = version_el.length; i-- > 0; ) {
       version_el[i].innerHTML = NProgress.version; // $('.version').text(NProgress.version);
     }
+
     NProgress.start("Hello World...");
 
     NProgress.settings.onDoneBegin.addEventListener(slow_fade_all_ends_all);
     NProgress.settings.onDone.addEventListener(prep_for_interactive_demo);
-	
-	// The demo tick() helper function checks this list for when to change the NProgress
-	// message displayed on screen ()and maybe do a few more things, e.g. additional custom UI
-	// update work). The swithcing points ('markers') are sorted from last to first to
-	// simplify the `tick()` code.
+  
+    // The demo tick() helper function checks this list for when to change the NProgress
+    // message displayed on screen ()and maybe do a few more things, e.g. additional custom UI
+    // update work). The switching points ('markers') are sorted from last to first to
+    // simplify the `tick()` code.
     var boot_time_markers = [
       // NProgress.inc() will never arrive at 'done' all by itself as it won't push the .status beyond the 0.994 mark:
       {
         status: 0.99,
         action: function () {
+          NProgress.Internals.removeClass(document.documentElement, 'demo-style-change');
+          
           NProgress.done(false, "Initial example animation completed");
 
           // slow_fade_all_ends_all(); <-- executed via NProgress.settings.onDoneBegin instead
@@ -103,6 +106,8 @@
       {
         status: 0.7,
         action: function () {
+          NProgress.Internals.addClass(document.documentElement, 'demo-style-change');
+          
           NProgress.inc(0, "While style changes are possible too!");
         }
       },
@@ -127,24 +132,57 @@
     }
 
     NProgress.settings.onTrickle.addEventListener(tick);
-	  
-	// Three optional ways to manipulate the visual NProgress trickle update rate
-	// and speed it up for this demo:
-	switch (0) {
-	case 1:
+    NProgress.settings.onStart.addEventListener(cleanup_after_interactive_demo);
+      
+    // Three optional ways to manipulate the visual NProgress trickle update rate
+    // and speed it up for this demo:
+    switch (3) {
+    case 1:
       NProgress.settings.trickleSpeed = 200;
       NProgress.settings.trickleRate = 0.15;
-	  break;
-	  
+      break;
+    
     case 2:
-	  NProgress.settings.trickleRate = 0.25;
-	  break;
-	  
+      NProgress.settings.trickleRate = 0.25;
+      break;
+    
     case 3:
-	  NProgress.settings.trickleSpeed = 50;
-	  break;
-	}
-	
+      NProgress.settings.trickleSpeed = 50;
+      break;
+    }
+
+    // ---
+    // 
+    // WARNING: The code above adjusts the `NProgress.settings`, which apply to the current
+    // NProgress run only!
+    // 
+    // If you wish to tweak the *defaults*, you must change the `NProgress.defaults` instead
+    // and call `NProgress.configure()` when you wish to apply the adjusted defaults, 
+    // optionally with some options specific for that NProgress run...
+    //
+    // ---
+    switch (3) {
+    case 1:
+      NProgress.defaults.trickleSpeed = 200;
+      NProgress.defaults.trickleRate = 0.15;
+      break;
+    
+    case 2:
+      NProgress.defaults.trickleRate = 0.25;
+      break;
+    
+    case 3:
+      NProgress.defaults.trickleSpeed = 50;
+      break;
+    }
+    NProgress.configure();
+    // The configured settings set up by `NProgress.configure()` always apply to the *next*
+    // NProgress session which is started with `NProgress.start()`; the running NProgress
+    // session is not affected:
+    if (0) {
+      NProgress.start("Hello World...");
+    }
+
     function slow_fade_all_ends_all() {
       function slow_fade_one(el, i) {
         setTimeout(function() {
@@ -169,6 +207,44 @@
       // And remove all previously registered onTrickle registered callbacks:
       NProgress.settings.onTrickle.removeEventListener();
       // Set up the new onTrickle handler:
+      var in_page_demo_markers = [
+        // NProgress.inc() will never arrive at 'done' all by itself as it won't push 
+        // the `.status` beyond the 0.994 mark:
+        {
+          status: 0.99,
+          action: function () {
+            // Signal error state by changing the UI:
+            if (NProgress.signaled) {
+              NProgress.Internals.addClass(document.documentElement, 'erroneous-run');
+              
+              NProgress.inc(null /* small random trickle of progress */, 
+                "In-line demo has been 'signaled', which means the potential related user process barfed a hairball and you, the user, are supposed to get a clear signal this way that the process has failed and somehow must recover.<br />" +
+                "<blockquote>" +
+                  "User code in your <code>onDoneBegin</code> and <code>onDone</code> event handlers should check the <code>NProgress.signaled</code> value for truthiness like we do in this demo to help that user code decide what to do when the user process/recovery logic subsequently signals <code>done()</code>. (In the demo we fake the lot but you'll get the point I'm sure...)" +
+                "</blockquote>");
+            } else {
+              // Use `NProgress.done()` when you want to *explicitly* signal the current 
+              // progress run as *done*.
+              // 
+              // When you only wish to update the message, then call `NProgress.inc()` with
+              // a zero 'increment' value; when you call `NProgress.inc()` with a non-numeric 
+              // zero/falsey amount, a random 'tickle' amount of progress is added instead...
+              if (0) {
+                NProgress.done(false, "In-line demo animation ends automatically...");
+              } else {
+                NProgress.inc(null /* small random trickle of progress */, 
+                  "In-line demo animation nears the end, waiting for you to hit <code>done()</code>...");
+              }
+            }
+          }
+        },
+        {
+          status: 0.25,
+          action: function () {
+            NProgress.inc(0, "In-line demo is progressing...");
+          }
+        }
+      ];
       markers = in_page_demo_markers;
       NProgress.settings.onTrickle.addEventListener(tick);
       // > The above bit of `onTrickle` related demo code can be simplified to only
@@ -177,6 +253,11 @@
       // > 
       // > We wanted to show how to clean out the registered handlers and set up a new set
       // > here...
+      NProgress.settings.onStart.addEventListener(cleanup_after_interactive_demo);
+    }
+
+    function cleanup_after_interactive_demo() {
+      NProgress.Internals.removeClass(document.documentElement, 'erroneous-run');
     }
   </script>
 </body>

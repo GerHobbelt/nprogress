@@ -31,7 +31,7 @@ button {
   display: inline-block;
   width: 100px;
   height: 20px;
-  border: solid 4px #2d9;
+  border: solid 4px #2299dd;
   border-radius: 10px;
   position: relative;
 }
@@ -43,7 +43,7 @@ button {
   left: 4px;
   bottom: 4px;
   width: 40%;
-  background: #2d9;
+  background: #2299dd;
   border-radius: 3px;
 }
 .fade {
@@ -78,18 +78,18 @@ button {
   content: '\25b6';
 }
 .button:hover {
-  background: #2d9;
+  background: #2299dd;
   color: #fff;
 }
 .button.primary {
-  background: #2d9;
+  background: #2299dd;
   color: #fff;
 }
 .button.primary:hover {
   background: #1c8;
 }
 .button:active {
-  background: #2d9;
+  background: #2299dd;
   box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
 }
 .controls {
@@ -97,6 +97,7 @@ button {
   margin: 0 auto;
   max-width: 350px;
   color: #666;
+  font-size: 0.9em;
 }
 .controls .button {
   width: 40px;
@@ -113,9 +114,6 @@ button {
 .controls b {
   color: #29d;
   font-weight: 700;
-}
-.controls {
-  font-size: 0.9em;
 }
 .page-header {
   width: 100%;
@@ -138,25 +136,13 @@ hr {
   height: 1px;
   border: 0;
   margin-bottom: 1em;
-  /* just having fun while showing a division between the top segment which will overlapped by the interactive NProgress instance running and the controls in the bottom segment of the page */
-  /*
-   * gradient created by:
-   *     http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%28255\%2C255\%2C255\%2C0\%29\%200\%25\%2C\%20rgba\%2839\%2C79\%2C23\%2C0\.48\%29\%2013\%25\%2C\%20rgba\%2819\%2C68\%2C9\%2C1\%29\%2027\%25\%2C\%20rgba\%286\%2C61\%2C0\%2C1\%29\%2036\%25\%2C\%20rgba\%28161\%2C164\%2C18\%2C1\%29\%2075\%25\%2C\%20rgba\%28217\%2C201\%2C24\%2C0\.44\%29\%2089\%25\%2C\%20rgba\%28255\%2C255\%2C255\%2C0\%29\%20100\%25\%29\%3B\%20/*\%20FF3\.6+\%20*'
-   */
   background: grey;
-  /* Old Browsers */
   background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
-  /* FF3.6+ */
   background: -webkit-gradient(left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(13%, rgba(39, 79, 23, 0.48)), color-stop(27%, #134409), color-stop(36%, #063d00), color-stop(75%, #a1a412), color-stop(89%, rgba(217, 201, 24, 0.44)), color-stop(100%, rgba(255, 255, 255, 0)));
-  /* Chrome, Safari4+ */
   background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
-  /* Chrome10+,Safari5.1+ */
   background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
-  /* Opera 11.10+ */
   background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
-  /* IE 10+ */
   background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
-  /* W3C */
 }
 p.brief {
   line-height: 1.4;
@@ -185,7 +171,6 @@ p.brief.big {
     padding: 4.5em 20px 3.5em 20px;
   }
 }
-/* --- */
 .actions {
   text-align: center;
   margin: 2em 0;
@@ -200,7 +185,6 @@ p.brief.big {
   padding-right: 30px;
   font-size: 1.1em;
 }
-/* ---- */
 div.hr-rule {
   height: 1px;
   width: 100px;
@@ -210,4 +194,231 @@ div.hr-rule {
 .share-buttons {
   margin: 0 auto;
   text-align: center;
+}
+#nprogress blockquote {
+  font-size: 80%;
+  width: 32em;
+  border: 2px #2299dd dotted;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 1em 0 1em auto;
+}
+.nprogress-signaled #nprogress {
+  pointer-events: none;
+  position: absolute;
+  z-index: 2014;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+}
+.nprogress-signaled #nprogress .bar {
+  background: red;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  transition: background 2s ease;
+}
+.nprogress-signaled #nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  top: -3px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px red, 0 0 5px red;
+  opacity: 1.0;
+  -webkit-transform: rotate(3deg);
+  -ms-transform: rotate(3deg);
+  transform: rotate(3deg);
+  transition: box-shadow 2s ease;
+}
+.nprogress-signaled #nprogress .msg {
+  display: block;
+  position: absolute;
+  top: 9px;
+  right: 42px;
+  font-size: 18px;
+  color: red;
+  padding: 0px 6px 0px 6px;
+  text-shadow: 0px 0px 8px red;
+  font-family: "Source Sans Pro", sans-serif;
+  line-height: 1.5;
+  transition: color 2s ease;
+  transition: text-shadow 2s ease;
+}
+.nprogress-signaled #nprogress .msgBG {
+  background-color: white;
+  opacity: 0.5;
+}
+.nprogress-signaled #nprogress .msgRF {
+  right: 4px;
+}
+.nprogress-signaled #nprogress .spinner {
+  display: block;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+.nprogress-signaled #nprogress .spinner .spinner-icon {
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: solid 2px transparent;
+  border-top-color: red;
+  border-left-color: red;
+  border-radius: 50%;
+  -webkit-animation: nprogress-spinner 400ms linear infinite;
+  animation: nprogress-spinner 400ms linear infinite;
+  transition: border-color 2s ease;
+}
+.demo-style-change #nprogress {
+  pointer-events: none;
+  position: absolute;
+  z-index: 2014;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+}
+.demo-style-change #nprogress .bar {
+  background: green;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  transition: background 2s ease;
+}
+.demo-style-change #nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  top: -3px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px green, 0 0 5px green;
+  opacity: 1.0;
+  -webkit-transform: rotate(3deg);
+  -ms-transform: rotate(3deg);
+  transform: rotate(3deg);
+  transition: box-shadow 2s ease;
+}
+.demo-style-change #nprogress .msg {
+  display: block;
+  position: absolute;
+  top: 9px;
+  right: 42px;
+  font-size: 18px;
+  color: green;
+  padding: 0px 6px 0px 6px;
+  text-shadow: 0px 0px 8px green;
+  font-family: "Source Sans Pro", sans-serif;
+  line-height: 1.5;
+  transition: color 2s ease;
+  transition: text-shadow 2s ease;
+}
+.demo-style-change #nprogress .msgBG {
+  background-color: white;
+  opacity: 0.5;
+}
+.demo-style-change #nprogress .msgRF {
+  right: 4px;
+}
+.demo-style-change #nprogress .spinner {
+  display: block;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+.demo-style-change #nprogress .spinner .spinner-icon {
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: solid 2px transparent;
+  border-top-color: green;
+  border-left-color: green;
+  border-radius: 50%;
+  -webkit-animation: nprogress-spinner 400ms linear infinite;
+  animation: nprogress-spinner 400ms linear infinite;
+  transition: border-color 2s ease;
+}
+.erroneous-run #nprogress {
+  pointer-events: none;
+  position: absolute;
+  z-index: 2014;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+}
+.erroneous-run #nprogress .bar {
+  background: #cc0044;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  transition: background 2s ease;
+}
+.erroneous-run #nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  top: -3px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px #cc0044, 0 0 5px #cc0044;
+  opacity: 1.0;
+  -webkit-transform: rotate(3deg);
+  -ms-transform: rotate(3deg);
+  transform: rotate(3deg);
+  transition: box-shadow 2s ease;
+}
+.erroneous-run #nprogress .msg {
+  display: block;
+  position: absolute;
+  top: 9px;
+  right: 42px;
+  font-size: 18px;
+  color: #cc0044;
+  padding: 0px 6px 0px 6px;
+  text-shadow: 0px 0px 8px #cc0044;
+  font-family: "Source Sans Pro", sans-serif;
+  line-height: 1.5;
+  transition: color 2s ease;
+  transition: text-shadow 2s ease;
+}
+.erroneous-run #nprogress .msgBG {
+  background-color: white;
+  opacity: 0.5;
+}
+.erroneous-run #nprogress .msgRF {
+  right: 4px;
+}
+.erroneous-run #nprogress .spinner {
+  display: block;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+.erroneous-run #nprogress .spinner .spinner-icon {
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: solid 2px transparent;
+  border-top-color: #cc0044;
+  border-left-color: #cc0044;
+  border-radius: 50%;
+  -webkit-animation: nprogress-spinner 400ms linear infinite;
+  animation: nprogress-spinner 400ms linear infinite;
+  transition: border-color 2s ease;
+}
+.erroneous-run #nprogress blockquote {
+  border-color: #C04;
 }

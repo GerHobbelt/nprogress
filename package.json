@@ -14,9 +14,9 @@
   "main": "nprogress.js",
   "license": "MIT",
   "devDependencies": {
-    "chai": ">=2.1.2",
+    "chai": ">=2.2.0",
     "jquery": ">=2.1.3",
-    "jsdom": ">=4.0.2",
+    "jsdom": ">=4.1.0",
     "mocha": ">=2.2.1",
     "mocha-jsdom": ">=0.2.1",
     "less": ">=2.4.0"

@@ -1,9 +1,121 @@
 
-@nprogress-color:         #8C001A; // #29d;
+@nprogress-color:         #29d; // #8C001A; // #29d;
 @nprogress-z-index:       2014;
 @nprogress-top:           0;
 @nprogress-height:        3px;
 @nprogress-spinner-size:  18px;
 @nprogress-spinner-right: 15px;
 @nprogress-spinner-top:   15px;
+@nprogress-font-family:   "Source Sans Pro", sans-serif;
+
+
+// --------------- mixins: ---------------------------
+
+.nprogress(@z-index: @nprogress-z-index, @bar-height: @nprogress-height, @bar-top: @nprogress-top, @bar-color: @nprogress-color, @spinner-size: @nprogress-spinner-size, @spinner-top: @nprogress-spinner-top, @spinner-right: @nprogress-spinner-right, @font-family: @nprogress-font-family) {
+  // -------------------------------------
+  // internal config
+  @transition-speed: 2s;
+  @transition-mode: ease; // linear;
+
+  @viewport-background-color: white;
+
+
+  // -------------------------------------
+  // the real deal: the CSS:
+
+  pointer-events: none;
+
+  position: absolute;
+  z-index: @z-index;
+
+  // take the entire size of the parent:
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: @viewport-background-color;
+
+  .bar {
+    background: @bar-color;
+
+    position: absolute;
+    top: @bar-top;
+    left: 0;
+    right: 0;
+    height: @bar-height;
+
+    transition: background @transition-speed @transition-mode;
+  }
+
+  // Fancy blur effect
+  .peg {
+    display: block;
+    position: absolute;
+    right: 0px;
+    top: (-@bar-height);
+    width: 100px;
+    height: 100%;
+    box-shadow: 0 0 10px @bar-color, 0 0 5px @bar-color;
+    opacity: 1.0;
+
+    -webkit-transform: rotate(3deg);
+        -ms-transform: rotate(3deg);
+            transform: rotate(3deg);
+
+    transition: box-shadow @transition-speed @transition-mode;
+  }
+
+  .msg {
+    display: block;
+    position: absolute;
+    top: 9px;
+    right: 42px;
+    font-size: 18px;
+    color: @bar-color;
+    padding: 0px 6px 0px 6px;
+    text-shadow: 0px 0px 8px @bar-color;
+    font-family: @font-family;
+    line-height: 1.5;
+
+    transition: color @transition-speed @transition-mode;
+    transition: text-shadow @transition-speed @transition-mode;
+  }
+
+  .msgBG {
+    background-color: @viewport-background-color;
+    opacity: 0.5;
+  }
+
+  .msgRF {
+    right: 4px;
+  }
+
+  // Remove these to get rid of the spinner
+  .spinner {
+    display: block;
+    position: absolute;
+    top: @spinner-top;
+    right: @spinner-right;
+
+    .spinner-icon {
+      width: @spinner-size;
+      height: @spinner-size;
+      box-sizing: border-box;
+
+      border: solid 2px transparent;
+      border-top-color: @bar-color;
+      border-left-color: @bar-color;
+      border-radius: 50%;
+
+      -webkit-animation: nprogress-spinner 400ms linear infinite;
+              animation: nprogress-spinner 400ms linear infinite;
+
+      transition: border-color @transition-speed @transition-mode;
+    }
+  }
+}
+
+
+// ---------------------------------------------------------------------------------------------
 

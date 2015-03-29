@@ -1,26 +1,31 @@
-i, 
-b 
+
+@import "variables";
+
+// --------------------------------------------
+
+i,
+b
 {
   font-style: normal;
   font-weight: 400;
 }
 
-body, 
-html 
+body,
+html
 {
   padding: 0;
   margin: 0;
 }
 
-body 
+body
 {
   background: white;
 }
 
-body, 
-td, 
-input, 
-textarea 
+body,
+td,
+input,
+textarea
 {
   font-family: "Source Sans Pro", sans-serif;
   font-size: 14px;
@@ -28,29 +33,29 @@ textarea
   color: #222;
 }
 
-button 
+button
 {
   cursor: pointer;
 }
 
-* 
+*
 {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
-.nprogress-logo 
+.nprogress-logo
 {
   display: inline-block;
 
   width: 100px;
   height: 20px;
-  border: solid 4px #2d9;
+  border: solid 4px @nprogress-color;
   border-radius: 10px;
 
   position: relative;
 
-  &:after 
+  &:after
   {
     content: '';
     display: block;
@@ -61,12 +66,12 @@ button
     bottom: 4px;
     width: 40%;
 
-    background: #2d9;
+    background: @nprogress-color;
     border-radius: 3px;
   }
 }
 
-.fade 
+.fade
 {
   transition: all 300ms linear 700ms;
   -webkit-transform: translate3d(0,0,0);
@@ -75,14 +80,14 @@ button
   -o-transform: translate3d(0,0,0);
   transform: translate3d(0,0,0);
   opacity: 1;
-  
-  &.out 
+
+  &.out
   {
     opacity: 0;
   }
 }
 
-button 
+button
 {
   margin: 0;
   padding: 0;
@@ -90,7 +95,7 @@ button
   outline: 0;
 }
 
-.button 
+.button
 {
   display: inline-block;
   text-decoration: none;
@@ -103,61 +108,61 @@ button
   font-weight: 700;
   text-align: left;
 
-  &.play:before 
+  &.play:before
   {
     content: '\25b6';
   }
 
-  &:hover 
+  &:hover
   {
-    background: #2d9;
+    background: @nprogress-color;
     color: #fff;
   }
 
-  &.primary 
+  &.primary
   {
-    background: #2d9;
+    background: @nprogress-color;
     color: #fff;
 
-    &:hover 
+    &:hover
     {
       background: #1c8;
     }
   }
 
-  &:active 
+  &:active
   {
-    background: #2d9;
+    background: @nprogress-color;
     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
   }
 }
 
-.controls 
+.controls
 {
   text-align: left;
   margin: 0 auto;
   max-width: 350px;
   color: #666;
 
-  .button 
+  .button
   {
     width: 40px;
     margin-right: 10px;
     text-align: center;
   }
 
-  p 
+  p
   {
     margin-top: 0.1em;
     margin-bottom: 0.1em;
   }
 
-  i 
+  i
   {
     color: #999;
   }
 
-  b 
+  b
   {
     color: #29d;
     font-weight: 700;
@@ -166,11 +171,11 @@ button
   font-size: 0.9em;
 }
 
-.page-header 
+.page-header
 {
   width: 100%;
 
-  div.hcenter 
+  div.hcenter
   {
     text-align: center;
     max-width: 400px;
@@ -178,7 +183,7 @@ button
     margin: 0 auto;
   }
 
-  h1 
+  h1
   {
     font-size: 2.0em;
     text-align: center;
@@ -189,116 +194,164 @@ button
   }
 }
 
-hr 
+hr
 {
   height: 1px;
   border: 0;
   margin-bottom: 1em;
 
-  /* just having fun while showing a division between the top segment which will overlapped by the interactive NProgress instance running and the controls in the bottom segment of the page */
+  // just having fun while showing a division between the top segment which will overlapped by the interactive NProgress instance running and the controls in the bottom segment of the page
 
-  /*
-   * gradient created by:
-   *     http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%28255\%2C255\%2C255\%2C0\%29\%200\%25\%2C\%20rgba\%2839\%2C79\%2C23\%2C0\.48\%29\%2013\%25\%2C\%20rgba\%2819\%2C68\%2C9\%2C1\%29\%2027\%25\%2C\%20rgba\%286\%2C61\%2C0\%2C1\%29\%2036\%25\%2C\%20rgba\%28161\%2C164\%2C18\%2C1\%29\%2075\%25\%2C\%20rgba\%28217\%2C201\%2C24\%2C0\.44\%29\%2089\%25\%2C\%20rgba\%28255\%2C255\%2C255\%2C0\%29\%20100\%25\%29\%3B\%20/*\%20FF3\.6+\%20*'
-   */
+  // gradient created by:
+  //     http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%28255\%2C255\%2C255\%2C0\%29\%200\%25\%2C\%20rgba\%2839\%2C79\%2C23\%2C0\.48\%29\%2013\%25\%2C\%20rgba\%2819\%2C68\%2C9\%2C1\%29\%2027\%25\%2C\%20rgba\%286\%2C61\%2C0\%2C1\%29\%2036\%25\%2C\%20rgba\%28161\%2C164\%2C18\%2C1\%29\%2075\%25\%2C\%20rgba\%28217\%2C201\%2C24\%2C0\.44\%29\%2089\%25\%2C\%20rgba\%28255\%2C255\%2C255\%2C0\%29\%20100\%25\%29\%3B\%20/*\%20FF3\.6+\%20*'
 
   background: grey;
-  /* Old Browsers */
-  
+  // Old Browsers
+
   background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(39,79,23,0.48) 13%, rgba(19,68,9,1) 27%, rgba(6,61,0,1) 36%, rgba(161,164,18,1) 75%, rgba(217,201,24,0.44) 89%, rgba(255,255,255,0) 100%);
-  /* FF3.6+ */
+  // FF3.6+
 
   background: -webkit-gradient(left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(13%, rgba(39,79,23,0.48)), color-stop(27%, rgba(19,68,9,1)), color-stop(36%, rgba(6,61,0,1)), color-stop(75%, rgba(161,164,18,1)), color-stop(89%, rgba(217,201,24,0.44)), color-stop(100%, rgba(255,255,255,0)));
-  /* Chrome, Safari4+ */
+  // Chrome, Safari4+
 
   background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(39,79,23,0.48) 13%, rgba(19,68,9,1) 27%, rgba(6,61,0,1) 36%, rgba(161,164,18,1) 75%, rgba(217,201,24,0.44) 89%, rgba(255,255,255,0) 100%);
-  /* Chrome10+,Safari5.1+ */
+  // Chrome10+,Safari5.1+
 
   background: -o-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(39,79,23,0.48) 13%, rgba(19,68,9,1) 27%, rgba(6,61,0,1) 36%, rgba(161,164,18,1) 75%, rgba(217,201,24,0.44) 89%, rgba(255,255,255,0) 100%);
-  /* Opera 11.10+ */
+  // Opera 11.10+
 
   background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(39,79,23,0.48) 13%, rgba(19,68,9,1) 27%, rgba(6,61,0,1) 36%, rgba(161,164,18,1) 75%, rgba(217,201,24,0.44) 89%, rgba(255,255,255,0) 100%);
-  /* IE 10+ */
+  // IE 10+
 
   background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(39,79,23,0.48) 13%, rgba(19,68,9,1) 27%, rgba(6,61,0,1) 36%, rgba(161,164,18,1) 75%, rgba(217,201,24,0.44) 89%, rgba(255,255,255,0) 100%);
-  /* W3C */
+  // W3C
 }
 
-p.brief 
+p.brief
 {
   line-height: 1.4;
   font-style: italic;
   color: #888;
 
-  &.big 
+  &.big
   {
     font-size: 1.1em;
   }
 }
 
-@media (min-width: 480px) 
+@media (min-width: 480px)
 {
-  .page-header h1 
+  .page-header h1
   {
     margin-top: 1em;
     margin-bottom: 0.4em;
   }
 }
 
-.page-header h1 i 
+.page-header h1 i
 {
   color: #aaa;
   font-style: normal;
   font-weight: 200;
 }
 
-@media (min-width: 480px) 
+@media (min-width: 480px)
 {
-  .page-header h1 
+  .page-header h1
   {
-    font-size: 3em; 
+    font-size: 3em;
   }
-  .page-header div.hcenter 
+  .page-header div.hcenter
   {
     padding: 4.5em 20px 3.5em 20px;
   }
 }
 
-/* --- */
+// --------------------------------------------
 
-.actions 
+.actions
 {
   text-align: center;
   margin: 2em 0;
 }
 
-@media (min-width: 480px) 
+@media (min-width: 480px)
 {
-  .actions 
+  .actions
   {
     margin: 4.5em 0 3.5em 0;
   }
 }
 
-.big.button 
+.big.button
 {
   padding-left: 30px;
   padding-right: 30px;
   font-size: 1.1em;
 }
 
+// --------------------------------------------
 
-/* ---- */
-
-div.hr-rule 
+div.hr-rule
 {
   height: 1px;
   width: 100px;
   margin: 40px auto;
   background: #ddd;
 }
-.share-buttons 
+.share-buttons
 {
   margin: 0 auto;
   text-align: center;
+}
+
+// Put a dotted box around the BLOCKQUOTE section in the message (if we use that tag and we do
+// in the demo when we have `.signal()`-ed and let the progress bar run on and hit the 99% mark).
+//
+// Also ensure that the entire BLOCKQUOTE is right-aligned within the MSG space: `margin-left: auto`
+#nprogress blockquote
+{
+  font-size: 80%;
+  width: 32em;
+  border: 2px @nprogress-color dotted;
+  padding: 10px;
+  border-radius: 6px;
+
+  margin: 1em 0 1em auto;
+}
+
+// --------------------------------------------
+
+// This class is set by default by the NProgress library on the ROOT node when the `.signal()` API has been invoked.
+.nprogress-signaled
+{
+  #nprogress
+  {
+    .nprogress(@nprogress-z-index, @nprogress-height, @nprogress-top, red, @nprogress-spinner-size, @nprogress-spinner-top, @nprogress-spinner-right, @nprogress-font-family);
+  }
+}
+
+// --------------------------------------------
+
+// The demo adds and removes this custom class to the ROOT from inside the userland `tick()` function ~ `onTickle` event handler.
+.demo-style-change
+{
+  #nprogress
+  {
+    .nprogress(@nprogress-z-index, @nprogress-height, @nprogress-top, green, @nprogress-spinner-size, @nprogress-spinner-top, @nprogress-spinner-right, @nprogress-font-family);
+  }
+}
+
+// The demo sets this class on the ROOT when `.signal()` is invoked BEFORE hitting the 99% mark through using the userland `tick()` function ~ `onTickle` event handler.
+.erroneous-run
+{
+  #nprogress
+  {
+    .nprogress(@nprogress-z-index, @nprogress-height, @nprogress-top, #C04, @nprogress-spinner-size, @nprogress-spinner-top, @nprogress-spinner-right, @nprogress-font-family);
+
+    blockquote
+    {
+      border-color: #C04;
+    }
+  }
 }

@@ -9,12 +9,13 @@
   background: white;
 }
 #nprogress .bar {
-  background: #8c001a;
+  background: #2299dd;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 3px;
+  transition: background 2s ease;
 }
 #nprogress .peg {
   display: block;
@@ -23,11 +24,12 @@
   top: -3px;
   width: 100px;
   height: 100%;
-  box-shadow: 0 0 10px #8c001a, 0 0 5px #8c001a;
+  box-shadow: 0 0 10px #2299dd, 0 0 5px #2299dd;
   opacity: 1.0;
   -webkit-transform: rotate(3deg);
   -ms-transform: rotate(3deg);
   transform: rotate(3deg);
+  transition: box-shadow 2s ease;
 }
 #nprogress .msg {
   display: block;
@@ -35,11 +37,13 @@
   top: 9px;
   right: 42px;
   font-size: 18px;
-  color: #8c001a;
+  color: #2299dd;
   padding: 0px 6px 0px 6px;
-  text-shadow: 0px 0px 8px #8c001a;
+  text-shadow: 0px 0px 8px #2299dd;
   font-family: "Source Sans Pro", sans-serif;
   line-height: 1.5;
+  transition: color 2s ease;
+  transition: text-shadow 2s ease;
 }
 #nprogress .msgBG {
   background-color: white;
@@ -59,11 +63,12 @@
   height: 18px;
   box-sizing: border-box;
   border: solid 2px transparent;
-  border-top-color: #8c001a;
-  border-left-color: #8c001a;
+  border-top-color: #2299dd;
+  border-left-color: #2299dd;
   border-radius: 50%;
   -webkit-animation: nprogress-spinner 400ms linear infinite;
   animation: nprogress-spinner 400ms linear infinite;
+  transition: border-color 2s ease;
 }
 .nprogress-parent {
   overflow: hidden;

@@ -22,7 +22,7 @@
     Internals: {
       /**
        * (Internal) Generator for the new addEventListener/removeEventListener API that sits on top of our events
-       * (onTrickle, onDone, onDoneBefore).
+       * (onStart, onTrickle, onSetMessage, onDone, onDoneBefore).
        *
        * This generator produces a function/class which offers these new addEventListener/removeEventListener methods;
        * calling the generated object directly will invoke all registered handlers.
@@ -229,11 +229,18 @@
     msgId: 'nprogressmsg',
     msgHasBackground: false,
     template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>',
+    onStart: II.generateFunctionRegister(),          // Invoked at the beginning of the start phase, when the progress DOM element has not yet been created.
     onDoneBegin: II.generateFunctionRegister(),      // Invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts.
     onDone: II.generateFunctionRegister(),           // Invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed.
-    onTrickle: II.generateFunctionRegister()         // Invoked every time after the progress bar has been updated. May be used to perform custom progress updates.
+    onTrickle: II.generateFunctionRegister(),        // Invoked every time after the progress bar has been updated. May be used to perform custom progress updates.
+    onSetMessage: II.generateFunctionRegister()      // Invoked at the exact moment every time the progress message is changed; used to allow Userland code to execute in sync with the message updates.
   };
-  var Settings = NProgress.settings = NProgress.extendSettings({}, NProgress.defaults);
+  // care for the handicapped...
+  var myNav = navigator.userAgent.toLowerCase();
+  if (myNav.indexOf('msie') !== -1) {
+    NProgress.defaults.showSpinner = false;
+    NProgress.defaults.msgHasBackground = true;
+  }
 
   /**
    * Updates configuration.
@@ -243,7 +250,10 @@
    *     });
    */
   NProgress.configure = function (options) {
-    Settings = NProgress.settings = NProgress.extendSettings({}, NProgress.defaults, options);
+    // Set up the settings for the next `.start() ... .done()` session, but **do NOT**
+    // nuke the settings for the possibly currently already running NProgress session:
+    NProgress.settings = NProgress.extendSettings({}, NProgress.defaults, options);
+
     var key, value;
     for (key in options) {
       value = options[key];
@@ -277,9 +287,12 @@
     for (var i = 1, len = args.length; i < len; i++) {
       extend1(dest, args[i]);
     }
-    
+
     return dest;
   };
+
+  // Set up the initial/default settings:
+  var Settings = NProgress.settings = NProgress.extendSettings({}, NProgress.defaults);
 
   /**
    * Last status (number).
@@ -304,81 +317,114 @@
    *
    * Note: calling `NProgress.set(1.0)` is identical to calling `NProgress.done()` without
    * the visual effects (and accompanying delay in executing the `onDone` callbacks), hence
-   * `NProgress.set(1.0)` serves as the *fast* version of `NProgress.done()`.  
+   * `NProgress.set(1.0)` serves as the *fast* version of `NProgress.done()`.
+   *
+   * `t` can be `null` or a message string (which must contain well-formed HTML; we do not
+   * 'safe encode' the message string!)
+   *
+   * `f` is truthy to *force* the `.set()` to publish the given progress perunage, even when
+   * it is *less than* the current progress status, i.e. you can use this `force` flag to
+   * force the progress bar to *jump back* to a smaller progress position.
    */
-  NProgress.set = function (n, t) {
+  NProgress.set = function (n, t, f) {
     var started = NProgress.isStarted();
+
+    if (!started) {
+      NProgress.signaled = false;
+      NProgress.msg = null;
+    }
 
     n = clamp(n, Settings.minimum, 1);
     // speed-up: when set() is called very often with the same progress perunage,
     // we simply ignore the multiple calls as long as they don't change anything.
-    // 
+    //
     // Optimization & render-fix: when set() is called with a perunage *less than*
     // the current status, we ignore the new perunage.
-    // 
-    // The *only* 'smaller-than-everything-else-which-came-before' perunage value `n` 
+    //
+    // The *only* 'smaller-than-everything-else-which-came-before' perunage value `n`
     // which *will* be processed is the exact value `n = 0` which signals the progress bar
     // is being *reset*.
-    var no_progress_update = (started && (NProgress.status > n ? n !== 0 : NProgress.status === n));
-    console.log("set: ", NProgress.status, n, no_progress_update, t);
-    if (!(no_progress_update && (t == null || NProgress.msg === t))) {
+    var must_progress_update = (f || !(started && (NProgress.status > n ? n !== 0 : NProgress.status === n)));
+    if (must_progress_update) {
       NProgress.status = n;
-      if (n === 0) {
-        NProgress.signaled = false;
-        NProgress.msg = null;
-      }
-      if (t != null) {
-        NProgress.msg = t;
-      }
 
       // Set positionUsing if it hasn't already been set
       if (Settings.positionUsing === '') {
         Settings.positionUsing = NProgress.getPositioningCSS();
       }
+    }
+    var must_set_message = (t != null && NProgress.msg !== t);
+    if (must_set_message) {
+      NProgress.msg = t;
+    }
 
-      var progress = NProgress.render(!started),
-          bar      = II.findElementByAny(progress, Settings.barId),
-          msg      = NProgress.msg,
-          prmsg    = II.findElementByAny(progress, Settings.msgId),
-          speed    = Settings.speed,
-          ease     = Settings.easing;
+    if (!started) {
+      Settings.onStart();
+    }
+
+    var progress = NProgress.render(!started),
+        bar      = II.findElementByAny(progress, Settings.barId),
+        msg      = NProgress.msg,
+        prmsg    = II.findElementByAny(progress, Settings.msgId),
+        speed    = Settings.speed,
+        ease     = Settings.easing;
+
+    if (must_progress_update || must_set_message) {
+      // And before we queue ours, we signal the queue that any old pending items should be done ASAP:
+      queue.make_em_hurry();
 
       progress.offsetWidth; /* Repaint */
 
-      // And before we queue ours, we signal the queue that any old pending items should be done ASAP:
-      if (!no_progress_update && n < 1) {
-        queue.make_em_hurry();
-      }
-
       // Now we go and queue ours...
-      queue.fast(function () {
-        if (prmsg && msg != null) {
-          prmsg.innerHTML = msg;
-        }
-      });
+      if (must_set_message) {
+        queue.fast(function () {
+          if (NProgress.isRendered()) {
+            var progress = NProgress.render(),
+                prmsg = II.findElementByAny(progress, Settings.msgId);
+
+            if (prmsg) {
+              var info = {
+                status: !started ? 0 : n, 
+                starting: !started, 
+                message: msg,
+                message_element: prmsg
+              };
+              Settings.onSetMessage(info);
+              if (info.message) {
+                msg = NProgress.msg = info.message;
+                prmsg.innerHTML = msg;
+              }
+            }
+          }
+        });
+      }
 
       queue.fast(function () {
         // Add transition
         css(bar, barPositionCSS(n, speed, ease));
-      });
+      }, speed);
 
       if (n === 1) {
         kill_trickle();
         queue.fast(function () {
+          // Execute `onDoneBegin()` quickly, but not before all older queued functions
+          // have completed running!
           Settings.onDoneBegin();
 
-          // Fade out
+          // Prepare for future fade out; for now keep the latest message in view
+          // for a while: make it last `Settings.endDuration` milliseconds
           css(progress, {
             transition: 'none',
             opacity: 1
           });
-        });
+        }, Settings.endDuration);
         queue.fast(function () {
+          // Fade out
           css(progress, {
             transition: 'all ' + speed + 'ms linear',
             opacity: 0
           });
-        }, Settings.endDuration);
+        }, speed);
         queue.fast(function () {
           NProgress.remove();
           Settings.onDone();
@@ -392,7 +438,7 @@
   };
 
   /**
-   * Return TRUE when the progressbar is active, i.e. when `NProgress.start()` has been called 
+   * Return TRUE when the progressbar is active, i.e. when `NProgress.start()` has been called
    * but neither `NProgress.set(1.0)` nor `NProgress.done()` have been reached yet.
    */
   NProgress.isStarted = function () {
@@ -421,15 +467,11 @@
    *
    */
   NProgress.start = function (t) {
-    // care for the handicapped...
-    var myNav = navigator.userAgent.toLowerCase();
-    if (myNav.indexOf('msie') !== -1) {
-      Settings.showSpinner = false;
-      Settings.msgHasBackground = true;
-    }
+    // Pick up the configured settings (`.configure(...)`):
+    Settings = NProgress.settings;
 
     if (!NProgress.isStarted()) {
-      NProgress.set(0, t);
+      NProgress.set(0, t, true);
     }
 
     return this;
@@ -442,7 +484,7 @@
    *
    *     NProgress.done();
    *
-   * If `true` is passed in the `force` parameter, it will show the progress bar 
+   * If `true` is passed in the `force` parameter, it will show the progress bar
    * even if it was previously hidden.
    *
    *     NProgress.done(true);
@@ -488,14 +530,19 @@
    *
    * This 'signaled state' can be reset by resetting the NProgress progress bar by calling the
    * `.start()` or `.set(0, ...)` APIs, which will restart the progress bar.
+   *
+   * The last explicitly set `signaled_state` (or TRUE if none was ever provided) is available
+   * via `NProgress.signaled`.
    */
   NProgress.signal = function (signaled_state, msg) {
     // Ignore any errors signaled *before* we `.start()`:
     if (!NProgress.isStarted()) return this;
 
-    NProgress.signaled = signaled_state || true;
+    NProgress.signaled = signaled_state || NProgress.signaled || true;
 
-    // Add a non-zero increment to cope with the edge case when the progress bar 
+    II.addClass(document.documentElement, NProgress.signaled.signal_class || 'nprogress-signaled');
+
+    // Add a non-zero increment to cope with the edge case when the progress bar
     // has just been started/reset and an error is signaled *immediately*:
     return NProgress.inc(1e-6, msg);
   };
@@ -599,9 +646,14 @@
    * setting.
    */
   NProgress.render = function (fromStart) {
-    if (NProgress.isRendered()) return document.getElementById('nprogress');
+    if (NProgress.isRendered()) {
+      return document.getElementById('nprogress');
+    }
 
     II.addClass(document.documentElement, 'nprogress-busy');
+    if (NProgress.signaled) {
+      II.addClass(document.documentElement, 'nprogress-signaled');
+    }
 
     var progress = document.createElement('div');
     progress.id = 'nprogress';
@@ -613,7 +665,9 @@
         spinner;
 
     // Set positionUsing if it hasn't already been set
-    if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+    if (Settings.positionUsing === '') {
+      Settings.positionUsing = NProgress.getPositioningCSS();
+    }
 
     css(bar, barPositionCSS(n, 0, Settings.easing));
 
@@ -641,11 +695,12 @@
     var parent = II.findElementByAny(document, Settings.parent);
     II.removeClass(parent, 'nprogress-parent');
     II.removeClass(document.documentElement, 'nprogress-busy');
+    II.removeClass(document.documentElement, 'nprogress-signaled');
     var progress = document.getElementById('nprogress');
     if (progress) II.removeElement(progress);
 
     NProgress.status = null;
-    //NProgress.signaled = false;  -- keep the signaled state intact: it can only be reset by 
+    //NProgress.signaled = false;  -- keep the signaled state intact: it can only be reset by
     //                                calling either `.start()` or the `.set(0, ...)` APIs!
     //                                That way we have a signaled state info still available
     //                                by the time the user callbacks are invoked by the `onDone`
@@ -693,8 +748,8 @@
    */
 
   /**
-   * Clamps value `n` between `min` and `max`. The range is inclusive i.e. `n` may equal `min` 
-   * or `max`. 
+   * Clamps value `n` between `min` and `max`. The range is inclusive i.e. `n` may equal `min`
+   * or `max`.
    */
   function clamp(n, min, max) {
     if (n < min) return min;
@@ -713,7 +768,7 @@
 
   /**
    * (Internal) returns the correct CSS for changing the bar's
-   * position given an n percentage, and speed and ease from Settings
+   * position given an `n` percentage, `speed` and `ease`.
    */
   function barPositionCSS(n, speed, ease) {
     var barCSS;

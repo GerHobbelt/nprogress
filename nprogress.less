@@ -6,91 +6,11 @@
 
 //@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700,400italic);
 
-#nprogress {
-  pointer-events: none;
 
-  position: absolute;
-  z-index: @nprogress-z-index;
-
-  // take the entire size of the parent:
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  background: white;
-
-  .bar {
-    background: @nprogress-color;
-
-    position: absolute;
-    top: @nprogress-top;
-    left: 0;
-    right: 0;
-    height: @nprogress-height;
-  }
-
-  // Fancy blur effect
-  .peg {
-    display: block;
-    position: absolute;
-    right: 0px;
-    top: (-@nprogress-height);
-    width: 100px;
-    height: 100%;
-    box-shadow: 0 0 10px @nprogress-color, 0 0 5px @nprogress-color;
-    opacity: 1.0;
-
-    -webkit-transform: rotate(3deg);
-        -ms-transform: rotate(3deg);
-            transform: rotate(3deg);
-  }
-
-  .msg {
-    display: block;
-    position: absolute;
-    top: 9px;
-    right: 42px;
-    font-size: 18px;
-    color: @nprogress-color;
-    padding: 0px 6px 0px 6px;
-    text-shadow: 0px 0px 8px @nprogress-color;
-    font-family: "Source Sans Pro", sans-serif;
-    line-height: 1.5;
-  }
-
-  .msgBG {
-    background-color: white;
-    opacity: 0.5;
-  }
-
-  .msgRF {
-    right: 4px;
-  }
-
-// Remove these to get rid of the spinner
-  .spinner {
-    display: block;
-    position: absolute;
-    top: @nprogress-spinner-top;
-    right: @nprogress-spinner-right;
-
-    .spinner-icon {
-      width: @nprogress-spinner-size;
-      height: @nprogress-spinner-size;
-      box-sizing: border-box;
-
-      border: solid 2px transparent;
-      border-top-color: @nprogress-color;
-      border-left-color: @nprogress-color;
-      border-radius: 50%;
-
-      -webkit-animation: nprogress-spinner 400ms linear infinite;
-              animation: nprogress-spinner 400ms linear infinite;
-    }
-  }
+#nprogress
+{
+  .nprogress(@nprogress-z-index, @nprogress-height, @nprogress-top, @nprogress-color, @nprogress-spinner-size, @nprogress-spinner-top, @nprogress-spinner-right, @nprogress-font-family);
 }
-
 
 .nprogress-parent {
   overflow: hidden;
