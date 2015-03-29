@@ -85,20 +85,66 @@
 
     NProgress.settings.onDoneBegin.addEventListener(slow_fade_all_ends_all);
     NProgress.settings.onDone.addEventListener(prep_for_interactive_demo);
+	
+	// The demo tick() helper function checks this list for when to change the NProgress
+	// message displayed on screen ()and maybe do a few more things, e.g. additional custom UI
+	// update work). The swithcing points ('markers') are sorted from last to first to
+	// simplify the `tick()` code.
+    var boot_time_markers = [
+      // NProgress.inc() will never arrive at 'done' all by itself as it won't push the .status beyond the 0.994 mark:
+      {
+        status: 0.99,
+        action: function () {
+          NProgress.done(false, "Initial example animation completed");
+
+          // slow_fade_all_ends_all(); <-- executed via NProgress.settings.onDoneBegin instead
+        }
+      },
+      {
+        status: 0.7,
+        action: function () {
+          NProgress.inc(0, "While style changes are possible too!");
+        }
+      },
+      {
+        status: 0.25,
+        action: function () {
+          NProgress.inc(0, "We can change the progress message on the fly!");
+        }
+      }
+    ];
+    var markers = boot_time_markers;
 
     function tick() {
-      // NProgress.inc() will never arrive at 'done' all by itself as it won't push the .status beyond the 0.994 mark:
-      if (NProgress.status > 0.99) {
-        NProgress.done(false, "Initial example animation completed");
-
-        // slow_fade_all_ends_all(); <-- executed via NProgress.settings.onDoneBegin instead
-      } else {
-        NProgress.inc();
-        setTimeout(tick, 200);
+      for (var i = 0, len = markers.length; i < len; i++) {
+        var m = markers[i];
+        if (!m.done && NProgress.status >= m.status) {
+          m.done = true;
+          m.action();
+          break;
+        }
       }
     }
-    tick();
 
+    NProgress.settings.onTrickle.addEventListener(tick);
+	  
+	// Three optional ways to manipulate the visual NProgress trickle update rate
+	// and speed it up for this demo:
+	switch (0) {
+	case 1:
+      NProgress.settings.trickleSpeed = 200;
+      NProgress.settings.trickleRate = 0.15;
+	  break;
+	  
+    case 2:
+	  NProgress.settings.trickleRate = 0.25;
+	  break;
+	  
+    case 3:
+	  NProgress.settings.trickleSpeed = 50;
+	  break;
+	}
+	
     function slow_fade_all_ends_all() {
       function slow_fade_one(el, i) {
         setTimeout(function() {
@@ -119,6 +165,18 @@
       NProgress.configure({
         parent: '.page-header'
       });
+
+      // And remove all previously registered onTrickle registered callbacks:
+      NProgress.settings.onTrickle.removeEventListener();
+      // Set up the new onTrickle handler:
+      markers = in_page_demo_markers;
+      NProgress.settings.onTrickle.addEventListener(tick);
+      // > The above bit of `onTrickle` related demo code can be simplified to only
+      // > one line of code where the `markers[]` array is switched over to point at the 
+      // > `in_page_demo_markers[]` in our particular situation.
+      // > 
+      // > We wanted to show how to clean out the registered handlers and set up a new set
+      // > here...
     }
   </script>
 </body>

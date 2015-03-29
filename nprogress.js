@@ -22,7 +22,7 @@
     Internals: {
       /**
        * (Internal) Generator for the new addEventListener/removeEventListener API that sits on top of our events
-       * (onDone & onDoneBefore).
+       * (onTrickle, onDone, onDoneBefore).
        *
        * This generator produces a function/class which offers these new addEventListener/removeEventListener methods;
        * calling the generated object directly will invoke all registered handlers.
@@ -90,12 +90,17 @@
           // peek, then exec, then shift: this ensures any queue() calls inside fn() are indeed *queued* rather than executed immediately
           if (pending.length) {
             var fn = pending[0];
+            var speed_ms = Settings.speed;
+            if (typeof fn === 'object') {
+              speed_ms = fn.speed;
+              fn = fn.action;
+            }
             fn();
             pending.shift();
             clearTimeout(timerHandle);
             if (pending.length) {
               // when progressShowing functions are queued one after another, make sure they zip through very quickly:
-              timerHandle = setTimeout(next, Math.max(1, ((fn.showingProgress && pending[0].showingProgress) ? 0.05 : 1) * Settings.speed));
+              timerHandle = setTimeout(next, Math.max(1, speed_ms));
             } else {
               timerHandle = null;
             }
@@ -112,6 +117,31 @@
           return q;
         }
         q.next = next;
+        q.fast = function (fn, speed_ms) {
+          q({
+            speed: speed_ms || 0,
+            action: fn
+          });
+        };
+        q.make_em_hurry = function (max_duration_ms) {
+          if (max_duration_ms == null) {
+            max_duration_ms = Settings.speed;
+          }
+          var std_speed = max_duration_ms / 4;
+          for (var i = 0, len = pending.length; i < len; i++) {
+            if (typeof pending[i] === 'function') {
+              pending[i] = {
+                speed: std_speed,
+                action: pending[i]
+              };
+            } else {
+              pending[i].speed /= 2;
+            }
+            pending[i].speed |= 0;
+            // pending[i].speed = min(pending[i].speed, max_duration_ms);
+            // max_duration_ms -= pending[i].speed;
+          }
+        };
 
         return q;
       },
@@ -180,13 +210,14 @@
   NProgress.version = '0.1.6';
 
   var II = NProgress.Internals;
-  var Settings = NProgress.settings = {
+  NProgress.defaults = {
     minimum: 0.08,
     maximum: 1,
     topHoldOff: 0.006,        // the progress perunage amount to 'stay away' from 1.0 (i.e. completion) until the caller signals the job is `.done()`
     easing: 'ease',
     positionUsing: '',        // translate3d | translate | ...
     speed: 200,
+    endDuration: 1800,        // the time during which the 'done' message will remain visible (and until we will fire the `onDone` event)
     trickle: true,
     trickleRate: 0.02,
     trickleSpeed: 800,
@@ -200,8 +231,9 @@
     template: '<div class="bar" id="nprogressbar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner"><div class="spinner-icon"></div></div>',
     onDoneBegin: II.generateFunctionRegister(),      // Invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts.
     onDone: II.generateFunctionRegister(),           // Invoked at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed.
-    onTrickle: II.generateFunctionRegister()         // Invoked every time after the progress bar has been updated. May be used to perform custom at the end of the 'done' phase, when the animation has completed and the progress DOM element has been removed.
+    onTrickle: II.generateFunctionRegister()         // Invoked every time after the progress bar has been updated. May be used to perform custom progress updates.
   };
+  var Settings = NProgress.settings = NProgress.extendSettings({}, NProgress.defaults);
 
   /**
    * Updates configuration.
@@ -211,6 +243,7 @@
    *     });
    */
   NProgress.configure = function (options) {
+    Settings = NProgress.settings = NProgress.extendSettings({}, NProgress.defaults, options);
     var key, value;
     for (key in options) {
       value = options[key];
@@ -218,6 +251,34 @@
     }
 
     return this;
+  };
+
+  /**
+   * Shallow clone and extend the destination object using the source objects.
+   * Return the cloned/extended destination object.
+   *
+   *     var opts = NProgress.extendSettings({}, NProgress.defaults, { showSpinner: false });
+   */
+  NProgress.extendSettings = function (dest, source /* , ... */) {
+    var args = arguments;
+
+    function extend1(dest, src) {
+      var key, value;
+      for (key in src) {
+        value = src[key];
+        if (value !== undefined && src.hasOwnProperty(key)) dest[key] = value;
+      }
+    }
+
+    // Make sure the destination is an object:
+    dest = dest || {};
+
+    // Now process all sources:
+    for (var i = 1, len = args.length; i < len; i++) {
+      extend1(dest, args[i]);
+    }
+    
+    return dest;
   };
 
   /**
@@ -251,7 +312,16 @@
     n = clamp(n, Settings.minimum, 1);
     // speed-up: when set() is called very often with the same progress perunage,
     // we simply ignore the multiple calls as long as they don't change anything.
-    if (!(started && NProgress.status === n && (t == null || NProgress.msg === t))) {
+    // 
+    // Optimization & render-fix: when set() is called with a perunage *less than*
+    // the current status, we ignore the new perunage.
+    // 
+    // The *only* 'smaller-than-everything-else-which-came-before' perunage value `n` 
+    // which *will* be processed is the exact value `n = 0` which signals the progress bar
+    // is being *reset*.
+    var no_progress_update = (started && (NProgress.status > n ? n !== 0 : NProgress.status === n));
+    console.log("set: ", NProgress.status, n, no_progress_update, t);
+    if (!(no_progress_update && (t == null || NProgress.msg === t))) {
       NProgress.status = n;
       if (n === 0) {
         NProgress.signaled = false;
@@ -262,7 +332,9 @@
       }
 
       // Set positionUsing if it hasn't already been set
-      if (Settings.positionUsing === '') Settings.positionUsing = NProgress.getPositioningCSS();
+      if (Settings.positionUsing === '') {
+        Settings.positionUsing = NProgress.getPositioningCSS();
+      }
 
       var progress = NProgress.render(!started),
           bar      = II.findElementByAny(progress, Settings.barId),
@@ -273,20 +345,26 @@
 
       progress.offsetWidth; /* Repaint */
 
-      var qf = function () {
+      // And before we queue ours, we signal the queue that any old pending items should be done ASAP:
+      if (!no_progress_update && n < 1) {
+        queue.make_em_hurry();
+      }
+
+      // Now we go and queue ours...
+      queue.fast(function () {
+        if (prmsg && msg != null) {
+          prmsg.innerHTML = msg;
+        }
+      });
+
+      queue.fast(function () {
         // Add transition
         css(bar, barPositionCSS(n, speed, ease));
-
-        if (prmsg && msg != null) {
-            prmsg.innerHTML = msg;
-        }
-      };
-      qf.showingProgress = true;
-
-      queue(qf);
+      });
 
       if (n === 1) {
-        queue(function () {
+        kill_trickle();
+        queue.fast(function () {
           Settings.onDoneBegin();
 
           // Fade out
@@ -295,20 +373,18 @@
             opacity: 1
           });
         });
-        queue(function () {
+        queue.fast(function () {
           css(progress, {
             transition: 'all ' + speed + 'ms linear',
             opacity: 0
           });
-        });
-        queue(function () {
+        }, Settings.endDuration);
+        queue.fast(function () {
           NProgress.remove();
           Settings.onDone();
         });
       } else {
-        queue(function () {
-          Settings.onTrickle();
-        });
+        trickle_work();
       }
     }
 
@@ -338,7 +414,8 @@
 
   /**
    * Shows the progress bar.
-   * This is the same as setting the status to 0%, except that it doesn't go backwards.
+   * This is similar to setting the status to 0%, except that it doesn't go backwards when the
+   * progress bar has already been started.
    *
    *     NProgress.start();
    *
@@ -353,18 +430,6 @@
 
     if (!NProgress.isStarted()) {
       NProgress.set(0, t);
-    }
-
-    var work = function () {
-      setTimeout(function () {
-        if (!NProgress.isStarted()) return;
-        NProgress.trickle();
-        work();
-      }, Settings.trickleSpeed);
-    };
-
-    if (Settings.trickle) {
-      work();
     }
 
     return this;
@@ -671,6 +736,30 @@
 
   // (Internal) Applies css properties to an element, similar to the jQuery css method.
   var css = II.css();
+
+  // (Internal) define a trickle function which will be queued.
+
+  var trickle_work_h = null;
+
+  function kill_trickle() {
+    clearTimeout(trickle_work_h);
+    trickle_work_h = null;
+  }
+
+  function trickle_work() {
+    if (!trickle_work_h) {
+      Settings.onTrickle();
+    }
+    // User code invoked by `onTrickle()` *may* set up the trickle again, so we better check again:
+    if (!trickle_work_h) {
+      trickle_work_h = setTimeout(function () {
+        kill_trickle();
+        if (!NProgress.isStarted() || !Settings.trickle) return;
+        NProgress.trickle();
+        trickle_work();
+      }, Settings.trickleSpeed);
+    }
+  }
 
   /**
    * (Internal) Determines if an element or space separated list of class names contains a class name.
