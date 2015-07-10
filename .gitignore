@@ -6,3 +6,6 @@ components
 # editor bak files
 *~
 *.bak
+
+# bloody Mac
+.DS_Store
