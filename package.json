@@ -2,23 +2,23 @@
   "name": "nprogress",
   "author": "Rico Sta. Cruz <hi@ricostacruz.com>",
   "description": "Simple slim progress bars",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "main": "nprogress.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/rstacruz/nprogress.git"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha -R spec"
+    "test": "mocha"
   },
   "main": "nprogress.js",
   "license": "MIT",
   "devDependencies": {
     "chai": ">=2.2.0",
     "jquery": ">=2.1.3",
-    "jsdom": ">=4.1.0",
-    "mocha": ">=2.2.1",
-    "mocha-jsdom": ">=0.2.1",
+    "jsdom": "^5.4.1",
+    "mocha": "^2.2.4",
+    "mocha-jsdom": "^0.3.0",
     "less": ">=2.4.0"
   },
   "dependencies": {},
@@ -26,7 +26,9 @@
     "format": "global",
     "shim": {
       "nprogress": {
-        "deps": ["./nprogress.css!"]
+        "deps": [
+          "./nprogress.css!"
+        ]
       }
     },
     "dependencies": {
@@ -35,7 +37,9 @@
   },
   "spm": {
     "main": "nprogress.js",
-    "output": ["nprogress.css"],
+    "output": [
+      "nprogress.css"
+    ],
     "ignore": [
       "support",
       "test",

@@ -3,13 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name='viewport' content='width=device-width,initial-scale=1.0'>
-  <title>Tests</title>
-  <link rel='stylesheet' href='../vendor/mocha.css'>
+  <title>Nprogress tests</title>
 
   <!-- mocha -->
+  <link href="../vendor/mocha.css" rel="stylesheet" />
   <script src='../vendor/jquery.js'></script>
   <script src='../vendor/mocha.js'></script>
-  <script>mocha.ignoreLeaks(); mocha.setup('bdd');</script>
+  <script>
+  mocha.ignoreLeaks(); 
+  mocha.setup('bdd');
+  </script>
   <script src='../vendor/chai.js'></script>
 
   <!-- nprogress -->
@@ -17,9 +20,11 @@
 
   <!-- tests -->
   <script src="test.js"></script>
-  <script>onload = function() { mocha.run(); }</script>
 </head>
 <body>
   <div id="mocha"></div>
+  <script>
+  mocha.run(); 
+  </script>
 </body>
 </html>
