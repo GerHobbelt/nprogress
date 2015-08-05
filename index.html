@@ -11,6 +11,7 @@
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700,400italic' rel='stylesheet' type='text/css'>
 
   <script src='nprogress.js'></script>
+  <script src='support/decodeQueryStringParameters.js'></script>
 </head>
 
 <body style='display: none'>
@@ -57,6 +58,21 @@
         &mdash;
         completes the progress
       </p>
+      <div class="tips">
+        <p>
+        Tips:
+        </p>
+        <ul>
+          <li>Try signaling an error before reaching the 99% mark and wait to see some additional info.</li>
+          <li>Click one of these links to see different progress trickle speeds at work: 
+            <a href="?speed=1~speed+rate">1</a>, 
+            <a href="?speed=2~speed">2</a>, 
+            <a href="?speed=3~rate">3</a>, 
+            <a href="?speed=0~slow">slow</a>,
+            <a href="?speed=default">default</a>.
+          </li>
+        </ul>
+      </div>
     </div>
     <div class='actions'>
       <a href='https://github.com/rstacruz/nprogress' class='button primary big'>
@@ -134,9 +150,11 @@
     NProgress.settings.onTrickle.addEventListener(tick);
     NProgress.settings.onStart.addEventListener(cleanup_after_interactive_demo);
       
+    var speedmode = parseInt((decodeQueryStringParameters()['speed'] || '').split('~')[0]);
+
     // Three optional ways to manipulate the visual NProgress trickle update rate
     // and speed it up for this demo:
-    switch (3) {
+    switch (speedmode) {
     case 1:
       NProgress.settings.trickleSpeed = 200;
       NProgress.settings.trickleRate = 0.15;
@@ -148,6 +166,16 @@
     
     case 3:
       NProgress.settings.trickleSpeed = 50;
+      break;
+
+    default:
+      NProgress.settings.trickleSpeed = 200;
+      NProgress.settings.trickleRate = 0.05;
+
+      NProgress.settings.incMaxRate = 0.33;
+      break;
+
+    case 0:
       break;
     }
 
@@ -161,7 +189,7 @@
     // optionally with some options specific for that NProgress run...
     //
     // ---
-    switch (3) {
+    switch (777) {
     case 1:
       NProgress.defaults.trickleSpeed = 200;
       NProgress.defaults.trickleRate = 0.15;
@@ -175,6 +203,9 @@
       NProgress.defaults.trickleSpeed = 50;
       break;
     }
+    
+    // ---
+
     NProgress.configure();
     // The configured settings set up by `NProgress.configure()` always apply to the *next*
     // NProgress session which is started with `NProgress.start()`; the running NProgress
@@ -182,6 +213,49 @@
     if (0) {
       NProgress.start("Hello World...");
     }
+
+    // Hook into the keyboard so that the user can drive NProgress using the keyboard.
+    // 
+    // This can be useful to help the tests/example usage along.
+    document.body.addEventListener('keydown', function (e) {
+      var key = e.keyCode || e.which;
+      var keychar = String.fromCharCode(key);
+      switch (key) {
+      // [S]
+      case 83:
+          NProgress.start('[S] key started it...');
+          break;
+  
+      // [D]
+      case 68:
+          NProgress.done(true, '[D] key ended it...');
+          break;
+  
+      // [E]
+      case 69:
+          NProgress.signal(true, '[E] key was used to signal an error...');
+          break;
+  
+      // [0]..[9]
+      case 48:
+      case 49:
+      case 50:
+      case 51:
+      case 52:
+      case 53:
+      case 54:
+      case 55:
+      case 56:
+      case 57:
+          NProgress.set((key - 48) * 0.1, '[' + String.fromCharCode(key) + '] key set the progress to ' + ((key - 48) * 10) + '%...', true);
+          break;
+  
+      default:
+          NProgress.inc(false, 'A key helped increment it...');
+          break;
+      }
+    }, false);
+
 
     function slow_fade_all_ends_all() {
       function slow_fade_one(el, i) {

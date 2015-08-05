@@ -195,6 +195,13 @@ div.hr-rule {
   margin: 0 auto;
   text-align: center;
 }
+div.tips p {
+  float: left;
+  margin-right: 2em;
+  font-size: 200%;
+  margin-top: 8px;
+  margin-bottom: 24px;
+}
 #nprogress blockquote {
   font-size: 80%;
   width: 32em;
