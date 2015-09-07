@@ -223,6 +223,7 @@
     trickleSpeed: 800,
     incMaxRate: 0.1,          // inc() calls maximum allowed growth rate
     showSpinner: true,
+    showBar: true,
     parent: 'body',
     barId: 'nprogressbar',
     spinnerId: 'nprogressspinner',
@@ -669,8 +670,12 @@
       Settings.positionUsing = NProgress.getPositioningCSS();
     }
 
-    css(bar, barPositionCSS(n, 0, Settings.easing));
-
+    if (!Settings.showBar) {
+      if (bar) II.removeElement(bar);
+    } else {
+      css(bar, barPositionCSS(n, 0, Settings.easing));
+    }
+    
     if (Settings.msgHasBackground) {
       II.addClass(prmsg, 'msgBG');
     }
@@ -679,6 +684,8 @@
       spinner = II.findElementByAny(progress, Settings.spinnerId);
       if (spinner) II.removeElement(spinner);
       II.addClass(prmsg, 'msgRF');
+    } else {
+      II.removeClass(prmsg, 'msgRF');
     }
 
     var parent = II.findElementByAny(document, Settings.parent);
