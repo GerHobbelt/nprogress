@@ -224,6 +224,7 @@
     incMaxRate: 0.1,          // inc() calls maximum allowed growth rate
     showSpinner: true,
     showBar: true,
+    showMessage: true,
     parent: 'body',
     barId: 'nprogressbar',
     spinnerId: 'nprogressspinner',
@@ -552,12 +553,11 @@
    * Shows the spinner independently from the progress bar.
    */
   NProgress.showSpinner = function () {
-    if (!Settings.showSpinner) {
-      var progress = NProgress.render(),
-          spinner  = II.findElementByAny(progress, Settings.spinnerId);
-      if (spinner) {
-        spinner.style.display = 'block';
-      }
+    Settings.showSpinner = true;
+    var progress = NProgress.render(),
+        spinner  = II.findElementByAny(progress, Settings.spinnerId);
+    if (spinner) {
+      spinner.style.display = 'block';
     }
 
     return this;
@@ -567,12 +567,11 @@
    * Hides the spinner independently from the progress bar.
    */
   NProgress.hideSpinner = function () {
-    if (!Settings.showSpinner) {
-      var progress = NProgress.render(),
-          spinner  = II.findElementByAny(progress, Settings.spinnerId);
-      if (spinner) {
-        spinner.style.display = 'none';
-      }
+    Settings.showSpinner = false;
+    var progress = NProgress.render(),
+        spinner  = II.findElementByAny(progress, Settings.spinnerId);
+    if (spinner) {
+      spinner.style.display = 'none';
     }
 
     return this;
@@ -582,12 +581,11 @@
    * Shows the bar independently from the progress bar.
    */
   NProgress.showBar = function () {
-    if (!Settings.showBar) {
-      var progress = NProgress.render(),
-          bar      = II.findElementByAny(progress, Settings.barId);
-      if (bar) {
-        bar.style.display = 'block';
-      }
+    Settings.showBar = true;
+    var progress = NProgress.render(),
+        bar      = II.findElementByAny(progress, Settings.barId);
+    if (bar) {
+      bar.style.display = 'block';
     }
 
     return this;
@@ -597,12 +595,39 @@
    * Hides the bar independently from the progress bar.
    */
   NProgress.hideBar = function () {
-    if (!Settings.showBar) {
-      var progress = NProgress.render(),
-          bar      = II.findElementByAny(progress, Settings.barId);
-      if (bar) {
-        bar.style.display = 'none';
-      }
+    Settings.showBar = false;
+    var progress = NProgress.render(),
+        bar      = II.findElementByAny(progress, Settings.barId);
+    if (bar) {
+      bar.style.display = 'none';
+    }
+
+    return this;
+  };
+
+  /**
+   * Shows the message independently from the progress bar.
+   */
+  NProgress.showMessage = function () {
+    Settings.showMessage = true;
+    var progress = NProgress.render(),
+        prmsg    = II.findElementByAny(progress, Settings.msgId);
+    if (prmsg) {
+      prmsg.style.display = 'block';
+    }
+
+    return this;
+  };
+
+  /**
+   * Hides the message independently from the progress bar.
+   */
+  NProgress.hideMessage = function () {
+    Settings.showMessage = false;
+    var progress = NProgress.render(),
+        prmsg    = II.findElementByAny(progress, Settings.msgId);
+    if (prmsg) {
+      prmsg.style.display = 'none';
     }
 
     return this;
@@ -663,29 +688,47 @@
     var bar      = II.findElementByAny(progress, Settings.barId),
         n        = (fromStart ? -1 : (NProgress.status || 0)),
         prmsg    = II.findElementByAny(progress, Settings.msgId),
-        spinner;
+        spinner  = II.findElementByAny(progress, Settings.spinnerId);
 
     // Set positionUsing if it hasn't already been set
     if (Settings.positionUsing === '') {
       Settings.positionUsing = NProgress.getPositioningCSS();
     }
 
-    if (!Settings.showBar) {
-      if (bar) II.removeElement(bar);
-    } else {
-      css(bar, barPositionCSS(n, 0, Settings.easing));
+    if (bar) {
+      if (!Settings.showBar) {
+        bar.style.display = 'none';
+      } else {
+        bar.style.display = 'block';
+        css(bar, barPositionCSS(n, 0, Settings.easing));
+      }
     }
     
-    if (Settings.msgHasBackground) {
-      II.addClass(prmsg, 'msgBG');
+    if (prmsg) {
+      if (!Settings.showMessage) {
+        prmsg.style.display = 'none';
+      } else {
+        prmsg.style.display = 'block';
+        if (Settings.msgHasBackground) {
+          II.addClass(prmsg, 'msgBG');
+        } else {
+          II.removeClass(prmsg, 'msgBG');
+        }
+      }
     }
 
-    if (!Settings.showSpinner) {
-      spinner = II.findElementByAny(progress, Settings.spinnerId);
-      if (spinner) II.removeElement(spinner);
-      II.addClass(prmsg, 'msgRF');
-    } else {
-      II.removeClass(prmsg, 'msgRF');
+    if (spinner) {
+      if (!Settings.showSpinner) {
+        spinner.style.display = 'none';
+        if (prmsg) {
+          II.addClass(prmsg, 'msgRF');
+        }
+      } else {
+        spinner.style.display = 'block';
+        if (prmsg) {
+          II.removeClass(prmsg, 'msgRF');
+        }
+      }
     }
 
     var parent = II.findElementByAny(document, Settings.parent);
