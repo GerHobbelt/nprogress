@@ -3,7 +3,7 @@
   pointer-events: none;
 }
 
-#nprogress .bar {
+.bar {
   background: #29d;
 
   position: fixed;
@@ -16,7 +16,7 @@
 }
 
 /* Fancy blur effect */
-#nprogress .peg {
+.peg {
   display: block;
   position: absolute;
   right: 0px;
@@ -31,7 +31,7 @@
 }
 
 /* Remove these to get rid of the spinner */
-#nprogress .spinner {
+.spinner {
   display: block;
   position: fixed;
   z-index: 1031;
@@ -39,7 +39,7 @@
   right: 15px;
 }
 
-#nprogress .spinner-icon {
+.spinner-icon {
   width: 18px;
   height: 18px;
   box-sizing: border-box;
