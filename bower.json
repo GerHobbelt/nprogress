@@ -1,8 +1,7 @@
 {
-  "name": "nprogress",
+  "name": "guprogress",
   "repo": "glassumbrella/guprogress",
-  "description": "slim progress bar",
-  "version": "0.1",
+  "description": "guprogess - fork of nprogress, a slim progress bar",
   "keywords": [
     "progress",
     "bar",
@@ -23,5 +22,9 @@
     "**/.*",
     "node_modules",
     "components"
+  ],
+  "homepage": "https://github.com/GlassUmbrella/guprogress",
+  "authors": [
+    "Weiran Zhang"
   ]
 }
