@@ -22,13 +22,6 @@
   "dependencies": {},
   "jspm": {
     "format": "global",
-    "shim": {
-      "nprogress": {
-        "deps": [
-          "./nprogress.css!"
-        ]
-      }
-    },
     "dependencies": {
       "css": "*"
     }
