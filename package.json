@@ -21,10 +21,7 @@
   },
   "dependencies": {},
   "jspm": {
-    "format": "global",
-    "dependencies": {
-      "css": "*"
-    }
+    "format": "global"
   },
   "spm": {
     "main": "nprogress.js",
