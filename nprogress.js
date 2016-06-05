@@ -214,14 +214,14 @@
     minimum: 0.08,
     maximum: 1,
     topHoldOff: 0.006,        // the progress perunage amount to 'stay away' from 1.0 (i.e. completion) until the caller signals the job is `.done()`
-    easing: 'ease',
+    easing: 'linear',
     positionUsing: '',        // translate3d | translate | ...
-    speed: 200,
+    speed: 350,
     endDuration: 1800,        // the time during which the 'done' message will remain visible (and until we will fire the `onDone` event)
     trickle: true,
     trickleRate: 0.02,
-    trickleSpeed: 800,
-    incMaxRate: 0.1,          // inc() calls maximum allowed growth rate
+    trickleSpeed: 250,
+    incMaxRate: 0.06,         // inc() calls maximum allowed growth rate
     showSpinner: true,
     showBar: true,
     showMessage: true,
@@ -505,11 +505,37 @@
 
     if (!NProgress.isStarted()) {
       return NProgress.start(t);
+    } else if (n > 1) {
+      return this;
     } else {
       if (typeof amount !== 'number') {
         // Do not increment beyond the configured 'maximum'; gradually increase towards that maximum
         // but never reach it. (See also issue #4.)
-        amount = Math.max(0, Settings.maximum - n) * clamp(Math.random() * Settings.incMaxRate, 0.05 /* minimum growth rate */, 1 - 0.05 /* absolute maximum growth rate */);
+        var d = n / Math.max(0.01, Settings.maximum); 
+        var lim = Settings.incMaxRate;      // minimum growth rate
+        var top = 1 - 0.05;                 // absolute maximum growth rate
+        var rnd = Math.random() * lim;
+        if (d < 0.25) {
+          // Start out between 3 - 6% increments --> 50-100% of the configured incMaxRate:
+          lim /= 2;
+        } else if (d < 0.65) {
+          // increment between 0 - 3% --> 5-50% of the configured incMaxRate:
+          lim /= 20;
+          rnd /= 2;
+        } else if (d < 0.9) {
+          // increment between 0 - 2% --> 3-33% of the configured incMaxRate:
+          lim /= 33;
+          rnd /= 3;
+        } else if (d < 0.99) {
+          // finally, increment it .5 % --> 0-8% of the configured incMaxRate: 
+          lim = 0;
+          rnd /= 12;
+        } else {
+          // after 99%, don't increment:
+          lim = 0;
+          rnd = 0;
+        }
+        amount = (Settings.maximum - n) * clamp(rnd, lim, top);
       }
 
       n = clamp(n + amount, 0, Settings.maximum - Settings.topHoldOff);
