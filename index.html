@@ -36,7 +36,7 @@
       </p>
       <p>
         <button class='button play' id='b-40' onclick='NProgress.set(0.4, "40% no less", true);'></button>
-        <i>NProgress</i><b>.set(0.4)</b>
+        <i>NProgress</i><b>.set(0.4, true)</b>
         &mdash;
         sets a percentage
       </p>
@@ -58,21 +58,27 @@
         &mdash;
         completes the progress
       </p>
-      <div class="tips">
-        <p>
-        Tips:
-        </p>
-        <ul>
-          <li>Try signaling an error before reaching the 99% mark and wait to see some additional info.</li>
-          <li>Click one of these links to see different progress trickle speeds at work: 
-            <a href="?speed=1~speed+rate">1</a>, 
-            <a href="?speed=2~speed">2</a>, 
-            <a href="?speed=3~rate">3</a>, 
-            <a href="?speed=0~slow">slow</a>,
-            <a href="?speed=default">default</a>.
-          </li>
-        </ul>
-      </div>
+    </div>
+    <div class="tips">
+      <h3>
+      Tips
+      </h3>
+      <ul>
+        <li>Try signaling an error before reaching the 99% mark and wait to see some additional info.</li>
+        <li>Click one of these links to see different progress trickle speeds at work: 
+          <a href="?speed=1~speed+rate">1</a>, 
+          <a href="?speed=2~speed">2</a>, 
+          <a href="?speed=3~rate">3</a>, 
+          <a href="?speed=0~slow">slow</a>,
+          <a href="?speed=default">default</a>.
+        </li>
+        <li>This demo also listens to the keyboard: 
+		S to start the bar, 
+		D to signal it's done, 
+		E to simulate signaling an error, 
+		0..9 to set the progress to 0..90% 
+		and any other key to help increment the progress.</li>
+      </ul>
     </div>
     <div class='actions'>
       <a href='https://github.com/rstacruz/nprogress' class='button primary big'>

@@ -97,6 +97,11 @@ button {
   margin: 0 auto;
   max-width: 350px;
   color: #666;
+  position: absolute;
+  top: 0;
+  right: 50%;
+  border-right: grey dotted 1px;
+  padding-right: 3%;
   font-size: 0.9em;
 }
 .controls .button {
@@ -114,6 +119,26 @@ button {
 .controls b {
   color: #29d;
   font-weight: 700;
+}
+.tips {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 35%;
+  max-width: 436px;
+}
+.tips p {
+  font-size: 200%;
+  position: absolute;
+  top: 33%;
+  left: 0px;
+  margin: 0;
+  padding: 0;
+  transform: rotate(-90deg);
+}
+.tips ul {
+  margin-left: 27px;
+  margin-top: 8px;
 }
 .page-header {
   width: 100%;
@@ -173,7 +198,7 @@ p.brief.big {
 }
 .actions {
   text-align: center;
-  margin: 2em 0;
+  margin: 218px 0 2em 0;
 }
 @media (min-width: 480px) {
   .actions {
@@ -194,13 +219,6 @@ div.hr-rule {
 .share-buttons {
   margin: 0 auto;
   text-align: center;
-}
-div.tips p {
-  float: left;
-  margin-right: 2em;
-  font-size: 200%;
-  margin-top: 8px;
-  margin-bottom: 24px;
 }
 #nprogress blockquote {
   font-size: 80%;

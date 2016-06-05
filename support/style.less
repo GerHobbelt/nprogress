@@ -137,12 +137,22 @@ button
   }
 }
 
+// the mouse-driven controls in the left column
 .controls
 {
   text-align: left;
   margin: 0 auto;
   max-width: 350px;
   color: #666;
+
+  // move this DIV to the left and make it the 'left column': 
+  position: absolute;
+  top: 0;
+  right: 50%;
+
+  // and beautify the column gutter:
+  border-right: grey dotted 1px;
+  padding-right: 3%;
 
   .button
   {
@@ -169,6 +179,38 @@ button
   }
 
   font-size: 0.9em;
+}
+
+// and make these 'tips' the right column
+.tips
+{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 35%;
+  max-width: 436px;
+
+  // with its 'Tips' header rotated and vertically centered (or there-abouts...)
+  p
+  {
+    font-size: 200%;
+
+    position: absolute;
+    top: 33%;
+    left: 0px;
+    margin: 0;
+    padding: 0;
+
+    transform: rotate(-90deg);
+  }
+
+  // and the accompanying list of tips should have a sufficient left margin to give the 'Tips' header a decent place to be:
+  ul
+  {
+    margin-left: 27px;
+    // and align the text in this column with the text in the left column: this is an eyeballed number!
+    margin-top: 8px;
+  }
 }
 
 .page-header
@@ -272,7 +314,9 @@ p.brief
 .actions
 {
   text-align: center;
-  margin: 2em 0;
+  // but bump it down sufficiently to give the two columns of controls and tips some breathing space
+  // while those employ absolute positioning:
+  margin: 218px 0 2em 0;
 }
 
 @media (min-width: 480px)
@@ -303,15 +347,6 @@ div.hr-rule
 {
   margin: 0 auto;
   text-align: center;
-}
-
-div.tips p
-{
-  float: left;
-  margin-right: 2em;
-  font-size: 200%;
-  margin-top: 8px;
-  margin-bottom: 24px;
 }
 
 // Put a dotted box around the BLOCKQUOTE section in the message (if we use that tag and we do
