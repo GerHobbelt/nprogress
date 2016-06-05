@@ -513,7 +513,7 @@
         // but never reach it. (See also issue #4.)
         var d = n / Math.max(0.01, Settings.maximum); 
         var lim = Settings.incMaxRate;      // minimum growth rate
-        var top = 1 - 0.05;                 // absolute maximum growth rate
+        var top = 1 - 0.01;                 // absolute maximum growth rate
         var rnd = Math.random() * lim;
         if (d < 0.25) {
           // Start out between 3 - 6% increments --> 50-100% of the configured incMaxRate:
