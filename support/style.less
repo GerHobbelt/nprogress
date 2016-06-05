@@ -187,7 +187,7 @@ button
   position: absolute;
   top: 0;
   left: 50%;
-  width: 35%;
+  width: 50%;
   max-width: 436px;
 
   // with its 'Tips' header rotated and vertically centered (or there-abouts...)
@@ -204,12 +204,27 @@ button
     transform: rotate(-90deg);
   }
 
+  h3
+  {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    margin-left: 26px;
+  }
+
   // and the accompanying list of tips should have a sufficient left margin to give the 'Tips' header a decent place to be:
   ul
   {
-    margin-left: 27px;
+    margin-left: -12px;
     // and align the text in this column with the text in the left column: this is an eyeballed number!
-    margin-top: 8px;
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 950px)
+{
+  .tips
+  {
+    width: 35%;
   }
 }
 
@@ -316,14 +331,22 @@ p.brief
   text-align: center;
   // but bump it down sufficiently to give the two columns of controls and tips some breathing space
   // while those employ absolute positioning:
-  margin: 218px 0 2em 0;
+  margin: 297px 0 2em 0;
 }
 
-@media (min-width: 480px)
+@media (min-width: 620px)
 {
   .actions
   {
-    margin: 4.5em 0 3.5em 0;
+    margin: 258px 0 0.5em 0;
+  }
+}
+
+@media (min-width: 950px)
+{
+  .actions
+  {
+    margin: 218px 0 0.5em 0;
   }
 }
 
@@ -340,7 +363,7 @@ div.hr-rule
 {
   height: 1px;
   width: 100px;
-  margin: 40px auto;
+  margin: 20px auto;
   background: #ddd;
 }
 .share-buttons
