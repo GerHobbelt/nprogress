@@ -1,5 +1,5 @@
 (function() {
-  if (typeof process === 'object') {
+  if (typeof require === 'function') {
     require('mocha-jsdom')();
   }
 
@@ -43,7 +43,7 @@
         setTimeout(function() {
           assert.equal($("#nprogress").length, 0);
           done();
-        }, 70);
+        }, 500);
       });
 
       it('must respect minimum', function() {
