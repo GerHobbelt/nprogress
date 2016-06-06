@@ -116,6 +116,19 @@
 
     // ----
 
+    describe('.remove()', function() {
+      it('should be removed from the parent', function() {
+        NProgress.set(1);
+        NProgress.remove();
+
+        var parent = $(NProgress.settings.parent);
+        assert.isFalse(parent.hasClass('nprogress-parent'));
+        assert.equal(parent.find('#nprogress').length, 0);
+      });
+    })
+
+    // ----
+
     describe('.inc()', function() {
       it('should render', function() {
         NProgress.inc();
