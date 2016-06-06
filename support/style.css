@@ -266,14 +266,11 @@ div.hr-rule {
   display: block;
   position: absolute;
   right: 0px;
-  top: -3px;
-  width: 100px;
+  top: 0px;
+  width: 1%;
   height: 100%;
   box-shadow: 0 0 10px red, 0 0 5px red;
   opacity: 1.0;
-  -webkit-transform: rotate(3deg);
-  -ms-transform: rotate(3deg);
-  transform: rotate(3deg);
   transition: box-shadow 2s ease;
 }
 .nprogress-signaled #nprogress .msg {
@@ -338,14 +335,11 @@ div.hr-rule {
   display: block;
   position: absolute;
   right: 0px;
-  top: -3px;
-  width: 100px;
+  top: 0px;
+  width: 1%;
   height: 100%;
   box-shadow: 0 0 10px green, 0 0 5px green;
   opacity: 1.0;
-  -webkit-transform: rotate(3deg);
-  -ms-transform: rotate(3deg);
-  transform: rotate(3deg);
   transition: box-shadow 2s ease;
 }
 .demo-style-change #nprogress .msg {
@@ -410,14 +404,11 @@ div.hr-rule {
   display: block;
   position: absolute;
   right: 0px;
-  top: -3px;
-  width: 100px;
+  top: 0px;
+  width: 1%;
   height: 100%;
   box-shadow: 0 0 10px #C04, 0 0 5px #C04;
   opacity: 1.0;
-  -webkit-transform: rotate(3deg);
-  -ms-transform: rotate(3deg);
-  transform: rotate(3deg);
   transition: box-shadow 2s ease;
 }
 .erroneous-run #nprogress .msg {

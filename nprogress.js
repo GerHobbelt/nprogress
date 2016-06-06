@@ -414,12 +414,14 @@
           Settings.onDoneBegin();
 
           // Prepare for future fade out; for now keep the latest message in view
-          // for a while: make it last `Settings.endDuration` milliseconds
+          // for a while: make it last `Settings.endDuration` milliseconds.
+          // 
+          // Note: Do not wait when there's no message to display.
           css(progress, {
             transition: 'none',
             opacity: 1
           });
-        }, Settings.endDuration);
+        }, (!NProgress.msg || !Settings.showMessage) ? 0 : Settings.endDuration);
         queue.fast(function () {
           // Fade out
           css(progress, {

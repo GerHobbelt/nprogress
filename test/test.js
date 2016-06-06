@@ -13,6 +13,12 @@
       $ = root.jQuery || require('jquery');
       NProgress = root.NProgress || require('../nprogress');
 
+      NProgress.settings.onStart.removeEventListener();
+      NProgress.settings.onDoneBegin.removeEventListener();
+      NProgress.settings.onDone.removeEventListener();
+      NProgress.settings.onTrickle.removeEventListener();
+      NProgress.settings.onSetMessage.removeEventListener();
+
       this.settings = $.extend({}, NProgress.settings);
     });
 
@@ -32,18 +38,26 @@
         assert.equal($("#nprogress .bar").length, 1);
         assert.equal($("#nprogress .peg").length, 1);
         assert.equal($("#nprogress .spinner").length, 1);
+        assert.equal($("#nprogress").is(':visible'), true);
         done();
       });
 
       it('.set(1) should appear and disappear', function(done) {
         NProgress.configure({ speed: 10 });
-        NProgress.set(0).set(1);
+        NProgress.set(0).set(1, "done!");
         assert.equal($("#nprogress").length, 1);
+        assert.equal($("#nprogress").is(':visible'), true);
 
         setTimeout(function() {
+          assert.equal($("#nprogress").length, 1);
+          assert.equal($("#nprogress").is(':visible'), true);
+        }, 70);
+
+        NProgress.settings.onDone.addEventListener(function () {
           assert.equal($("#nprogress").length, 0);
+          assert.equal(NProgress.status, null);
           done();
-        }, 500);
+        })
       });
 
       it('must respect minimum', function() {
@@ -56,9 +70,13 @@
         assert.equal(NProgress.status, NProgress.settings.minimum);
       });
 
-      it('must clamp to maximum', function() {
+      it('must clamp to maximum', function(done) {
+        NProgress.settings.onDone.addEventListener(function () {
+          assert.equal(NProgress.status, null);
+          done();
+        })
         NProgress.set(456);
-        assert.equal(NProgress.status, null);
+        assert.equal(NProgress.status, 1);
       });
     });
 
@@ -68,6 +86,7 @@
       it('must render', function(done) {
         NProgress.start();
         assert.equal($("#nprogress").length, 1);
+        assert.equal($("#nprogress").is(':visible'), true);
         done();
       });
 
@@ -97,6 +116,7 @@
       it('.done(true) must render', function(done) {
         NProgress.done(true);
         assert.equal($("#nprogress").length, 1);
+        assert.equal($("#nprogress").is(':visible'), true);
         done();
       });
     });
@@ -133,6 +153,7 @@
       it('should render', function() {
         NProgress.inc();
         assert.equal($("#nprogress").length, 1);
+        assert.equal($("#nprogress").is(':visible'), true);
       });
 
       it('should start with minimum', function() {
@@ -149,7 +170,9 @@
       });
 
       it('should never reach 1.0', function() {
-        for (var i=0; i<100; ++i) { NProgress.inc(); }
+        for (var i = 0; i < 100; ++i) { 
+          NProgress.inc(); 
+        }
         assert.operator(NProgress.status, '<', 1.0);
       });
     });
@@ -170,6 +193,8 @@
         NProgress.start();
 
         assert.equal($("#nprogress .spinner").length, 1);
+        assert.equal($("#nprogress .spinner").css('display'), 'block');
+        assert.equal($("#nprogress .spinner").is(':visible'), true);
       });
 
       it('should be true by default', function() {
@@ -180,7 +205,9 @@
         NProgress.configure({ showSpinner: false });
         NProgress.start();
 
-        assert.equal($("#nprogress .spinner").length, 0);
+        assert.equal($("#nprogress .spinner").length, 1);
+        assert.equal($("#nprogress .spinner").is(':hidden'), true);
+        assert.equal($("#nprogress .spinner").css('display'), 'none');
       });
     });
   });

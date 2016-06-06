@@ -11,7 +11,7 @@
 
 // --------------- mixins: ---------------------------
 
-.nprogress(@z-index: @nprogress-z-index, @bar-height: @nprogress-height, @bar-top: @nprogress-top, @bar-color: @nprogress-color, @spinner-size: @nprogress-spinner-size, @spinner-top: @nprogress-spinner-top, @spinner-right: @nprogress-spinner-right, @font-family: @nprogress-font-family) {
+.nprogress(@z-index: @nprogress-z-index, @bar-height: @nprogress-height, @bar-top: @nprogress-top, @bar-color: @nprogress-color, @spinner-size: @nprogress-spinner-size, @spinner-top: @nprogress-spinner-top, @spinner-right: @nprogress-spinner-right, @font-family: @nprogress-font-family, @nprogress-position: absolute, @nprogress-area-width: 100%, @nprogress-area-height: 100%) {
   // -------------------------------------
   // internal config
   @transition-speed: 2s;
@@ -25,21 +25,28 @@
 
   pointer-events: none;
 
-  position: absolute;
+  position: @nprogress-position;
   z-index: @z-index;
 
   // take the entire size of the parent:
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  // http://stackoverflow.com/questions/14910667/how-to-use-if-statements-in-less#23728128
+  & when (@nprogress-position = fixed) or (@nprogress-position = absolute) {  
+    right: 0;
+    bottom: 0;
+  }
+  & when not ((@nprogress-position = fixed) or (@nprogress-position = absolute)) {  
+    width: @nprogress-area-width;
+    height: @nprogress-area-height;
+  }
 
   background: @viewport-background-color;
 
   .bar {
     background: @bar-color;
 
-    position: absolute;
+    position: @nprogress-position;
     top: @bar-top;
     left: 0;
     right: 0;
@@ -48,8 +55,14 @@
     transition: background @transition-speed @transition-mode;
   }
 
-  // Fancy blur effect
-  .peg {
+  // Fancy blur effect: this one creates a kind of 'blur/shadow gradient' IFF
+  // the progress bar is shown at the very top of the screen, i.e. most of
+  // the .peg object gets CLIPPED.
+  //
+  // We use the second .peg blur effect further below when we display 
+  // the progress bar anywhere in the page (and cannot benefit from
+  // screen clipping).
+  .peg when (@nprogress-position = fixed) {
     display: block;
     position: absolute;
     right: 0px;
@@ -62,6 +75,18 @@
     -webkit-transform: rotate(3deg);
         -ms-transform: rotate(3deg);
             transform: rotate(3deg);
+
+    transition: box-shadow @transition-speed @transition-mode;
+  }
+  .peg when not (@nprogress-position = fixed) {
+    display: block;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    width: 1%;
+    height: 100%;
+    box-shadow: 0 0 10px @bar-color, 0 0 5px @bar-color;
+    opacity: 1.0;
 
     transition: box-shadow @transition-speed @transition-mode;
   }
