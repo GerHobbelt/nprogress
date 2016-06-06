@@ -954,6 +954,11 @@
    *   This is useful when the user code already has a reference to the desired DOM node
    *   and passes it via the NProgress options.
    *
+   * - **a jQuery DOM node** -- i.e. a DOM node wrapped in `$(...)`: the DOM node will be
+   *   extracted from the jQuery container and returned.
+   *   This is useful when the user code already has a jQuery-based reference to the desired DOM node
+   *   and passes it via the NProgress options.
+   *
    * - **an ID string** -- (without the leading '#')
    *
    * - **a query string** -- which identifies a single DOM node. (When it doesn't,
@@ -961,6 +966,9 @@
    *   https://developer.mozilla.org/en-US/docs/Web/API/document.querySelector)
    */
   II.findElementByAny = function (root, selector) {
+    if (selector.jquery && selector.get) {
+      return selector.get(0);
+    }
     if (selector.appendChild) {
       return selector;
     }
@@ -968,7 +976,7 @@
       root = document;
     }
     var s = '' + selector;
-    if (s.match(/^[a-z]+[\w:.-]*$/)) {
+    if (s.match(/^[a-z_]+[\w:.-]*$/)) {
       var node = root.querySelector('#' + s);
       if (node) {
         return node;
