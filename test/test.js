@@ -54,7 +54,12 @@
         }, 70);
 
         NProgress.settings.onDone.addEventListener(function () {
-          assert.equal($("#nprogress").length, 0);
+		if (NProgress.settings.removeFromDOM) {
+          		assert.equal($("#nprogress").length, 0);
+		} else {
+			assert.equal($("#nprogress").length, 1);
+			$("#nprogress").display = 'none';     // .visibility = "hidden";
+		}
           assert.equal(NProgress.status, null);
           done();
         })
@@ -130,7 +135,13 @@
 
         var parent = $(NProgress.settings.parent);
         assert.isFalse(parent.hasClass('nprogress-parent'));
-        assert.equal(parent.find('#nprogress').length, 0);
+		if (NProgress.settings.removeFromDOM) {
+			assert.equal(parent.find('#nprogress').length, 0);
+		} else {
+			assert.equal(parent.find('#nprogress').length, 1);
+			assert.equal($("#nprogress").length, 1);
+			$("#nprogress").display = 'none';   // .visibility = "hidden";
+		}		
       });
     });
 

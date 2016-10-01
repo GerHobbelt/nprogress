@@ -225,7 +225,7 @@
     showSpinner: true,
     showBar: true,
     showMessage: true,
-    removeFromDOM: true,
+    removeFromDOM: false,
     forceRedraw: false,
     parent: 'body',
     barId: 'nprogressbar',
