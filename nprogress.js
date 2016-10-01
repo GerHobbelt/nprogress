@@ -1,4 +1,4 @@
-/*! NProgress (c) 2013-2015, Rico Sta. Cruz
+/*! NProgress (c) 2013-2016, Rico Sta. Cruz
  * http://ricostacruz.com/nprogress
  * @license MIT */
 
@@ -207,13 +207,13 @@
     }
   };
 
-  NProgress.version = '0.2.0';
+  NProgress.version = '0.2.1-3';
 
   var II = NProgress.Internals;
   NProgress.defaults = {
-    minimum: 0.08,
+    minimum: 0.005,
     maximum: 1,
-    topHoldOff: 0.006,        // the progress perunage amount to 'stay away' from 1.0 (i.e. completion) until the caller signals the job is `.done()`
+    topHoldOff: 0.015,        // the progress perunage amount to 'stay away' from 1.0 (i.e. completion) until the caller signals the job is `.done()`
     easing: 'linear',
     positionUsing: '',        // translate3d | translate | ...
     speed: 350,
@@ -525,11 +525,11 @@
           // increment between 0 - 3% --> 5-50% of the configured incMaxRate:
           lim /= 20;
           rnd /= 2;
-        } else if (d < 0.9) {
+        } else if (d < 0.8) {
           // increment between 0 - 2% --> 3-33% of the configured incMaxRate:
           lim /= 33;
           rnd /= 3;
-        } else if (d < 0.99) {
+        } else if (d < 1 - Settings.topHoldOff) {
           // finally, increment it 0.5% --> 0-8% of the configured incMaxRate: 
           lim = 0;
           rnd /= 12;
