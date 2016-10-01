@@ -312,6 +312,10 @@ div.hr-rule {
   animation: nprogress-spinner 400ms linear infinite;
   transition: border-color 2s ease;
 }
+.nprogress-signaled #nprogress.anti-clockwise .spinner-icon {
+  -webkit-animation-direction: reverse;
+  animation-direction: reverse;
+}
 .demo-style-change #nprogress {
   pointer-events: none;
   position: absolute;
@@ -381,6 +385,10 @@ div.hr-rule {
   animation: nprogress-spinner 400ms linear infinite;
   transition: border-color 2s ease;
 }
+.demo-style-change #nprogress.anti-clockwise .spinner-icon {
+  -webkit-animation-direction: reverse;
+  animation-direction: reverse;
+}
 .erroneous-run #nprogress {
   pointer-events: none;
   position: absolute;
@@ -449,6 +457,10 @@ div.hr-rule {
   -webkit-animation: nprogress-spinner 400ms linear infinite;
   animation: nprogress-spinner 400ms linear infinite;
   transition: border-color 2s ease;
+}
+.erroneous-run #nprogress.anti-clockwise .spinner-icon {
+  -webkit-animation-direction: reverse;
+  animation-direction: reverse;
 }
 .erroneous-run #nprogress blockquote {
   border-color: #C04;

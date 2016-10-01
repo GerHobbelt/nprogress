@@ -530,7 +530,7 @@
           lim /= 33;
           rnd /= 3;
         } else if (d < 0.99) {
-          // finally, increment it .5 % --> 0-8% of the configured incMaxRate: 
+          // finally, increment it 0.5% --> 0-8% of the configured incMaxRate: 
           lim = 0;
           rnd /= 12;
         } else {

@@ -69,10 +69,8 @@
 }
 #nprogress.anti-clockwise .spinner-icon {
   -webkit-animation-direction: reverse;
-          animation-direction: reverse;
+  animation-direction: reverse;
 }
-
-
 .nprogress-parent {
   overflow: hidden;
   position: relative;
