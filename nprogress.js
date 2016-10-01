@@ -225,6 +225,8 @@
     showSpinner: true,
     showBar: true,
     showMessage: true,
+    removeFromDOM: true,
+    forceRedraw: false,
     parent: 'body',
     barId: 'nprogressbar',
     spinnerId: 'nprogressspinner',
@@ -376,7 +378,9 @@
       // And before we queue ours, we signal the queue that any old pending items should be done ASAP:
       queue.make_em_hurry();
 
-      progress.offsetWidth; /* Repaint */
+      if (Settings.forceRedraw) {
+        progress.offsetWidth; /* Repaint */
+      }
 
       // Now we go and queue ours...
       if (must_set_message) {
@@ -564,6 +568,13 @@
    *
    * The last explicitly set `signaled_state` (or TRUE if none was ever provided) is available
    * via `NProgress.signaled`.
+   *
+   * > ### Note
+   * >
+   * > You can replace/override the signal-class `'nprogress-signaled'` by passing a
+   * > `signaled_state` *object* (which will evaluate as truthy anyway) containing a
+   * > `.signal_class` property naming the class you want to use to signal the error.
+   * >
    */
   NProgress.signal = function (signaled_state, msg) {
     // Ignore any errors signaled *before* we `.start()`:
@@ -701,16 +712,21 @@
    * setting.
    */
   NProgress.render = function (fromStart) {
+    var progress = document.getElementById('nprogress');
     if (NProgress.isRendered()) {
-      return document.getElementById('nprogress');
+      return progress;
     }
 
     II.addClass(document.documentElement, 'nprogress-busy');
     if (NProgress.signaled) {
-      II.addClass(document.documentElement, 'nprogress-signaled');
+      II.addClass(document.documentElement, (NProgress.signaled && NProgress.signaled.signal_class) || 'nprogress-signaled');
     }
 
-    var progress = document.createElement('div');
+    if (progress) {
+      II.removeClass(progress, 'nprogress-removed');
+    } else {
+      progress = document.createElement('div');
+    }
     progress.id = 'nprogress';
     progress.innerHTML = Settings.template;
     progress.className = {
@@ -780,9 +796,15 @@
     var parent = II.findElementByAny(document, Settings.parent);
     II.removeClass(parent, 'nprogress-parent');
     II.removeClass(document.documentElement, 'nprogress-busy');
-    II.removeClass(document.documentElement, 'nprogress-signaled');
+    II.removeClass(document.documentElement, (NProgress.signaled && NProgress.signaled.signal_class) || 'nprogress-signaled');
     var progress = document.getElementById('nprogress');
-    if (progress) II.removeElement(progress);
+    if (progress) {
+      if (Settings.removeFromDOM) {
+        II.removeElement(progress);
+      } else {
+        II.addClass(progress, 'nprogress-removed');
+      }
+    }
 
     NProgress.status = null;
     //NProgress.signaled = false;  -- keep the signaled state intact: it can only be reset by
@@ -799,7 +821,8 @@
    * Checks if the progress bar is rendered.
    */
   NProgress.isRendered = function () {
-    return !!document.getElementById('nprogress');
+    var progress = document.getElementById('nprogress');
+    return !progress || !II.hasClass(progress, 'nprogress-removed');
   };
 
   /**
