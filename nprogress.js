@@ -230,6 +230,7 @@
     spinnerId: 'nprogressspinner',
     msgId: 'nprogressmsg',
     msgHasBackground: false,
+    direction: 'leftToRightIncreased',               // leftToRightIncreased(default), leftToRightReduced, rightToLeftIncreased, rightToLeftReduced.
     template: '<div class="bar" id="nprogressbar" role="progress-bar"><div class="peg" id="nprogresspeg"></div></div><div class="msg" id="nprogressmsg"></div><div class="spinner" id="nprogressspinner" role="progress-spinner"><div class="spinner-icon"></div></div>',
     onStart: II.generateFunctionRegister(),          // Invoked at the beginning of the start phase, when the progress DOM element has not yet been created.
     onDoneBegin: II.generateFunctionRegister(),      // Invoked immediately when the status changes to 'completed'; this runs before the 'done' end animation starts.
@@ -712,6 +713,12 @@
     var progress = document.createElement('div');
     progress.id = 'nprogress';
     progress.innerHTML = Settings.template;
+    progress.className = {
+      'leftToRightIncreased': 'clockwise',
+      'leftToRightReduced': 'anti-clockwise',
+      'rightToLeftIncreased': 'anti-clockwise',
+      'rightToLeftReduced': 'clockwise'
+    }[Settings.direction];
 
     var bar      = II.findElementByAny(progress, Settings.barId),
         n        = (fromStart ? -1 : (NProgress.status || 0)),
@@ -840,7 +847,12 @@
    * percentage (`-100%..0%`).
    */
   function toBarPerc(n) {
-    return (-1 + n) * 100;
+    return ({
+      'leftToRightIncreased': -1 + n,
+      'leftToRightReduced': -n,
+      'rightToLeftIncreased': 1 - n,
+      'rightToLeftReduced': n
+    }[Settings.direction]) * 100;
   }
 
 

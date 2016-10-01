@@ -62,7 +62,7 @@ $(document).on('turbolinks:render', function() {
 ~~~
 
 ### Turbolinks (version 3 and below)
-Ensure you're using Turbolinks 1.3.0+, and use 
+Ensure you're using Turbolinks 1.3.0+, and use
 this: (explained [here](https://github.com/rstacruz/nprogress/issues/8#issuecomment-23010560))
 
 ~~~ js
@@ -189,6 +189,13 @@ specify this to change the parent container. (default: `body`)
 NProgress.configure({ parent: '#container' });
 ~~~
 
+#### `direction` : leftToRightIncreased, leftToRightReduced, rightToLeftIncreased, rightToLeftReduced.
+change the direction of progress bar's animation.(default: `leftToRightIncreased`)
+
+
+~~~ js
+NProgress.configure({ direction: 'leftToRightReduced' });
+~~~
 
 Customization
 -------------
