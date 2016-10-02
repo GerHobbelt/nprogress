@@ -406,10 +406,12 @@
         });
       }
 
-      queue.fast(function () {
-        // Add transition
-        css(bar, barPositionCSS(n, speed, ease));
-      }, speed);
+      if (bar) {
+        queue.fast(function () {
+          // Add transition
+          css(bar, barPositionCSS(n, speed, ease));
+        }, speed);
+      }
 
       if (n === 1) {
         kill_trickle();
