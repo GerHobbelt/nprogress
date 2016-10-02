@@ -257,7 +257,7 @@ https://github.com/rstacruz/nprogress/blob/master/nprogress.js#L31
 Thanks
 ------
 
-**NProgress** © 2013-2014, Rico Sta. Cruz. Released under the [MIT License].<br>
+**NProgress** © 2013-2016, Rico Sta. Cruz. Released under the [MIT License].<br>
 Authored and maintained by Rico Sta. Cruz with help from [contributors].
 
 > [ricostacruz.com](http://ricostacruz.com) &nbsp;&middot;&nbsp;
