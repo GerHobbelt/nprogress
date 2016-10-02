@@ -71,6 +71,9 @@
   -webkit-animation-direction: reverse;
   animation-direction: reverse;
 }
+#nprogress.nprogress-removed {
+  display: none;
+}
 .nprogress-parent {
   overflow: hidden;
   position: relative;

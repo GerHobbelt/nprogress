@@ -316,6 +316,9 @@ div.hr-rule {
   -webkit-animation-direction: reverse;
   animation-direction: reverse;
 }
+.nprogress-signaled #nprogress.nprogress-removed {
+  display: none;
+}
 .demo-style-change #nprogress {
   pointer-events: none;
   position: absolute;
@@ -389,6 +392,9 @@ div.hr-rule {
   -webkit-animation-direction: reverse;
   animation-direction: reverse;
 }
+.demo-style-change #nprogress.nprogress-removed {
+  display: none;
+}
 .erroneous-run #nprogress {
   pointer-events: none;
   position: absolute;
@@ -461,6 +467,9 @@ div.hr-rule {
 .erroneous-run #nprogress.anti-clockwise .spinner-icon {
   -webkit-animation-direction: reverse;
   animation-direction: reverse;
+}
+.erroneous-run #nprogress.nprogress-removed {
+  display: none;
 }
 .erroneous-run #nprogress blockquote {
   border-color: #C04;
