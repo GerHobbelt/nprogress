@@ -47,11 +47,10 @@ button {
   border-radius: 3px;
 }
 .fade {
+  -webkit-transition: all 300ms linear 700ms;
   transition: all 300ms linear 700ms;
   -webkit-transform: translate3d(0, 0, 0);
-  -moz-transform: translate3d(0, 0, 0);
   -ms-transform: translate3d(0, 0, 0);
-  -o-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
   opacity: 1;
 }
@@ -134,7 +133,9 @@ button {
   left: 0px;
   margin: 0;
   padding: 0;
-  transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+      -ms-transform: rotate(-90deg);
+          transform: rotate(-90deg);
 }
 .tips h3 {
   margin-top: 6px;
@@ -172,11 +173,8 @@ hr {
   border: 0;
   margin-bottom: 1em;
   background: grey;
-  background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
   background: -webkit-gradient(left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(13%, rgba(39, 79, 23, 0.48)), color-stop(27%, #134409), color-stop(36%, #063d00), color-stop(75%, #a1a412), color-stop(89%, rgba(217, 201, 24, 0.44)), color-stop(100%, rgba(255, 255, 255, 0)));
   background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
-  background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
-  background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
   background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(39, 79, 23, 0.48) 13%, #134409 27%, #063d00 36%, #a1a412 75%, rgba(217, 201, 24, 0.44) 89%, rgba(255, 255, 255, 0) 100%);
 }
 p.brief {
@@ -260,6 +258,7 @@ div.hr-rule {
   left: 0;
   right: 0;
   height: 3px;
+  -webkit-transition: background 2s ease;
   transition: background 2s ease;
 }
 .nprogress-signaled #nprogress .peg {
@@ -271,6 +270,7 @@ div.hr-rule {
   height: 100%;
   box-shadow: 0 0 10px red, 0 0 5px red;
   opacity: 1.0;
+  -webkit-transition: box-shadow 2s ease;
   transition: box-shadow 2s ease;
 }
 .nprogress-signaled #nprogress .msg {
@@ -284,7 +284,9 @@ div.hr-rule {
   text-shadow: 0px 0px 8px red;
   font-family: "Source Sans Pro", sans-serif;
   line-height: 1.5;
+  -webkit-transition: color 2s ease;
   transition: color 2s ease;
+  -webkit-transition: text-shadow 2s ease;
   transition: text-shadow 2s ease;
 }
 .nprogress-signaled #nprogress .msgBG {
@@ -309,12 +311,16 @@ div.hr-rule {
   border-left-color: red;
   border-radius: 50%;
   -webkit-animation: nprogress-spinner 400ms linear infinite;
-  animation: nprogress-spinner 400ms linear infinite;
+          animation: nprogress-spinner 400ms linear infinite;
+  -webkit-transition: border-color 2s ease;
   transition: border-color 2s ease;
 }
 .nprogress-signaled #nprogress.anti-clockwise .spinner-icon {
   -webkit-animation-direction: reverse;
-  animation-direction: reverse;
+          animation-direction: reverse;
+}
+.nprogress-signaled #nprogress.nprogress-removed {
+  display: none;
 }
 .demo-style-change #nprogress {
   pointer-events: none;
@@ -333,6 +339,7 @@ div.hr-rule {
   left: 0;
   right: 0;
   height: 3px;
+  -webkit-transition: background 2s ease;
   transition: background 2s ease;
 }
 .demo-style-change #nprogress .peg {
@@ -344,6 +351,7 @@ div.hr-rule {
   height: 100%;
   box-shadow: 0 0 10px green, 0 0 5px green;
   opacity: 1.0;
+  -webkit-transition: box-shadow 2s ease;
   transition: box-shadow 2s ease;
 }
 .demo-style-change #nprogress .msg {
@@ -357,7 +365,9 @@ div.hr-rule {
   text-shadow: 0px 0px 8px green;
   font-family: "Source Sans Pro", sans-serif;
   line-height: 1.5;
+  -webkit-transition: color 2s ease;
   transition: color 2s ease;
+  -webkit-transition: text-shadow 2s ease;
   transition: text-shadow 2s ease;
 }
 .demo-style-change #nprogress .msgBG {
@@ -382,12 +392,16 @@ div.hr-rule {
   border-left-color: green;
   border-radius: 50%;
   -webkit-animation: nprogress-spinner 400ms linear infinite;
-  animation: nprogress-spinner 400ms linear infinite;
+          animation: nprogress-spinner 400ms linear infinite;
+  -webkit-transition: border-color 2s ease;
   transition: border-color 2s ease;
 }
 .demo-style-change #nprogress.anti-clockwise .spinner-icon {
   -webkit-animation-direction: reverse;
-  animation-direction: reverse;
+          animation-direction: reverse;
+}
+.demo-style-change #nprogress.nprogress-removed {
+  display: none;
 }
 .erroneous-run #nprogress {
   pointer-events: none;
@@ -406,6 +420,7 @@ div.hr-rule {
   left: 0;
   right: 0;
   height: 3px;
+  -webkit-transition: background 2s ease;
   transition: background 2s ease;
 }
 .erroneous-run #nprogress .peg {
@@ -417,6 +432,7 @@ div.hr-rule {
   height: 100%;
   box-shadow: 0 0 10px #C04, 0 0 5px #C04;
   opacity: 1.0;
+  -webkit-transition: box-shadow 2s ease;
   transition: box-shadow 2s ease;
 }
 .erroneous-run #nprogress .msg {
@@ -430,7 +446,9 @@ div.hr-rule {
   text-shadow: 0px 0px 8px #C04;
   font-family: "Source Sans Pro", sans-serif;
   line-height: 1.5;
+  -webkit-transition: color 2s ease;
   transition: color 2s ease;
+  -webkit-transition: text-shadow 2s ease;
   transition: text-shadow 2s ease;
 }
 .erroneous-run #nprogress .msgBG {
@@ -455,12 +473,16 @@ div.hr-rule {
   border-left-color: #C04;
   border-radius: 50%;
   -webkit-animation: nprogress-spinner 400ms linear infinite;
-  animation: nprogress-spinner 400ms linear infinite;
+          animation: nprogress-spinner 400ms linear infinite;
+  -webkit-transition: border-color 2s ease;
   transition: border-color 2s ease;
 }
 .erroneous-run #nprogress.anti-clockwise .spinner-icon {
   -webkit-animation-direction: reverse;
-  animation-direction: reverse;
+          animation-direction: reverse;
+}
+.erroneous-run #nprogress.nprogress-removed {
+  display: none;
 }
 .erroneous-run #nprogress blockquote {
   border-color: #C04;

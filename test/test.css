@@ -15,6 +15,7 @@
   left: 0;
   right: 0;
   height: 3px;
+  -webkit-transition: background 2s ease;
   transition: background 2s ease;
 }
 #nprogress .peg {
@@ -26,6 +27,7 @@
   height: 100%;
   box-shadow: 0 0 10px #29d, 0 0 5px #29d;
   opacity: 1.0;
+  -webkit-transition: box-shadow 2s ease;
   transition: box-shadow 2s ease;
 }
 #nprogress .msg {
@@ -39,7 +41,9 @@
   text-shadow: 0px 0px 8px #29d;
   font-family: "Source Sans Pro", sans-serif;
   line-height: 1.5;
+  -webkit-transition: color 2s ease;
   transition: color 2s ease;
+  -webkit-transition: text-shadow 2s ease;
   transition: text-shadow 2s ease;
 }
 #nprogress .msgBG {
@@ -64,12 +68,16 @@
   border-left-color: #29d;
   border-radius: 50%;
   -webkit-animation: nprogress-spinner 400ms linear infinite;
-  animation: nprogress-spinner 400ms linear infinite;
+          animation: nprogress-spinner 400ms linear infinite;
+  -webkit-transition: border-color 2s ease;
   transition: border-color 2s ease;
 }
 #nprogress.anti-clockwise .spinner-icon {
   -webkit-animation-direction: reverse;
-  animation-direction: reverse;
+          animation-direction: reverse;
+}
+#nprogress.nprogress-removed {
+  display: none;
 }
 .nprogress-parent {
   position: relative;
@@ -84,9 +92,11 @@
 }
 @keyframes nprogress-spinner {
   0% {
-    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
   }
   100% {
-    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
   }
 }

@@ -370,7 +370,6 @@
     var progress = NProgress.render(!started),
         bar      = II.findElementByAny(progress, Settings.barId),
         msg      = NProgress.msg,
-        prmsg    = II.findElementByAny(progress, Settings.msgId),
         speed    = Settings.speed,
         ease     = Settings.easing;
 
@@ -785,6 +784,10 @@
     }
 
     var parent = II.findElementByAny(document, Settings.parent);
+    if (!parent) {
+      console.log('WARNING: failed to locate NProgress designated parent node: ', Settings.parent);
+      parent = Settings.parent = document.body;
+    }
     parent.appendChild(progress);
     II.addClass(parent, 'nprogress-parent');
 
@@ -796,6 +799,10 @@
    */
   NProgress.remove = function () {
     var parent = II.findElementByAny(document, Settings.parent);
+    if (!parent) {
+      console.log('WARNING: failed to locate NProgress designated parent node: ', Settings.parent);
+      parent = document.body;       // do NOT set `Settings.parent` here as well!
+    }
     II.removeClass(parent, 'nprogress-parent');
     II.removeClass(document.documentElement, 'nprogress-busy');
     II.removeClass(document.documentElement, (NProgress.signaled && NProgress.signaled.signal_class) || 'nprogress-signaled');
@@ -1013,6 +1020,10 @@
     }
     if (!root) {
       root = document;
+    }
+    // don't crash in antique browsers:
+    if (typeof root.querySelector !== 'function') {
+      return null;
     }
     var s = '' + selector;
     if (s.match(/^[a-z_]+[\w:.-]*$/)) {
