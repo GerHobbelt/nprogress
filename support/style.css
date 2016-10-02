@@ -241,7 +241,8 @@ div.hr-rule {
   border-radius: 6px;
   margin: 1em 0 1em auto;
 }
-.nprogress-signaled #nprogress {
+.nprogress-signaled #nprogress,
+.nprogress-busy.nprogress-signaled #nprogress {
   pointer-events: none;
   position: absolute;
   z-index: 2014;
@@ -251,7 +252,8 @@ div.hr-rule {
   bottom: 0;
   background: white;
 }
-.nprogress-signaled #nprogress .bar {
+.nprogress-signaled #nprogress .bar,
+.nprogress-busy.nprogress-signaled #nprogress .bar {
   background: red;
   position: absolute;
   top: 0;
@@ -261,7 +263,8 @@ div.hr-rule {
   -webkit-transition: background 2s ease;
   transition: background 2s ease;
 }
-.nprogress-signaled #nprogress .peg {
+.nprogress-signaled #nprogress .peg,
+.nprogress-busy.nprogress-signaled #nprogress .peg {
   display: block;
   position: absolute;
   right: 0px;
@@ -273,7 +276,8 @@ div.hr-rule {
   -webkit-transition: box-shadow 2s ease;
   transition: box-shadow 2s ease;
 }
-.nprogress-signaled #nprogress .msg {
+.nprogress-signaled #nprogress .msg,
+.nprogress-busy.nprogress-signaled #nprogress .msg {
   display: block;
   position: absolute;
   top: 9px;
@@ -289,20 +293,24 @@ div.hr-rule {
   -webkit-transition: text-shadow 2s ease;
   transition: text-shadow 2s ease;
 }
-.nprogress-signaled #nprogress .msgBG {
+.nprogress-signaled #nprogress .msgBG,
+.nprogress-busy.nprogress-signaled #nprogress .msgBG {
   background-color: white;
   opacity: 0.5;
 }
-.nprogress-signaled #nprogress .msgRF {
+.nprogress-signaled #nprogress .msgRF,
+.nprogress-busy.nprogress-signaled #nprogress .msgRF {
   right: 4px;
 }
-.nprogress-signaled #nprogress .spinner {
+.nprogress-signaled #nprogress .spinner,
+.nprogress-busy.nprogress-signaled #nprogress .spinner {
   display: block;
   position: absolute;
   top: 15px;
   right: 15px;
 }
-.nprogress-signaled #nprogress .spinner .spinner-icon {
+.nprogress-signaled #nprogress .spinner .spinner-icon,
+.nprogress-busy.nprogress-signaled #nprogress .spinner .spinner-icon {
   width: 18px;
   height: 18px;
   box-sizing: border-box;
@@ -315,11 +323,13 @@ div.hr-rule {
   -webkit-transition: border-color 2s ease;
   transition: border-color 2s ease;
 }
-.nprogress-signaled #nprogress.anti-clockwise .spinner-icon {
+.nprogress-signaled #nprogress.anti-clockwise .spinner-icon,
+.nprogress-busy.nprogress-signaled #nprogress.anti-clockwise .spinner-icon {
   -webkit-animation-direction: reverse;
           animation-direction: reverse;
 }
-.nprogress-signaled #nprogress.nprogress-removed {
+.nprogress-signaled #nprogress.nprogress-removed,
+.nprogress-busy.nprogress-signaled #nprogress.nprogress-removed {
   display: none;
 }
 .demo-style-change #nprogress {
@@ -403,7 +413,9 @@ div.hr-rule {
 .demo-style-change #nprogress.nprogress-removed {
   display: none;
 }
-.erroneous-run #nprogress {
+.erroneous-run #nprogress,
+.nprogress-busy.erroneous-run #nprogress,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress {
   pointer-events: none;
   position: absolute;
   z-index: 2014;
@@ -413,7 +425,9 @@ div.hr-rule {
   bottom: 0;
   background: white;
 }
-.erroneous-run #nprogress .bar {
+.erroneous-run #nprogress .bar,
+.nprogress-busy.erroneous-run #nprogress .bar,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress .bar {
   background: #C04;
   position: absolute;
   top: 0;
@@ -423,7 +437,9 @@ div.hr-rule {
   -webkit-transition: background 2s ease;
   transition: background 2s ease;
 }
-.erroneous-run #nprogress .peg {
+.erroneous-run #nprogress .peg,
+.nprogress-busy.erroneous-run #nprogress .peg,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress .peg {
   display: block;
   position: absolute;
   right: 0px;
@@ -435,7 +451,9 @@ div.hr-rule {
   -webkit-transition: box-shadow 2s ease;
   transition: box-shadow 2s ease;
 }
-.erroneous-run #nprogress .msg {
+.erroneous-run #nprogress .msg,
+.nprogress-busy.erroneous-run #nprogress .msg,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress .msg {
   display: block;
   position: absolute;
   top: 9px;
@@ -451,20 +469,28 @@ div.hr-rule {
   -webkit-transition: text-shadow 2s ease;
   transition: text-shadow 2s ease;
 }
-.erroneous-run #nprogress .msgBG {
+.erroneous-run #nprogress .msgBG,
+.nprogress-busy.erroneous-run #nprogress .msgBG,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress .msgBG {
   background-color: white;
   opacity: 0.5;
 }
-.erroneous-run #nprogress .msgRF {
+.erroneous-run #nprogress .msgRF,
+.nprogress-busy.erroneous-run #nprogress .msgRF,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress .msgRF {
   right: 4px;
 }
-.erroneous-run #nprogress .spinner {
+.erroneous-run #nprogress .spinner,
+.nprogress-busy.erroneous-run #nprogress .spinner,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress .spinner {
   display: block;
   position: absolute;
   top: 15px;
   right: 15px;
 }
-.erroneous-run #nprogress .spinner .spinner-icon {
+.erroneous-run #nprogress .spinner .spinner-icon,
+.nprogress-busy.erroneous-run #nprogress .spinner .spinner-icon,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress .spinner .spinner-icon {
   width: 18px;
   height: 18px;
   box-sizing: border-box;
@@ -477,13 +503,19 @@ div.hr-rule {
   -webkit-transition: border-color 2s ease;
   transition: border-color 2s ease;
 }
-.erroneous-run #nprogress.anti-clockwise .spinner-icon {
+.erroneous-run #nprogress.anti-clockwise .spinner-icon,
+.nprogress-busy.erroneous-run #nprogress.anti-clockwise .spinner-icon,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress.anti-clockwise .spinner-icon {
   -webkit-animation-direction: reverse;
           animation-direction: reverse;
 }
-.erroneous-run #nprogress.nprogress-removed {
+.erroneous-run #nprogress.nprogress-removed,
+.nprogress-busy.erroneous-run #nprogress.nprogress-removed,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress.nprogress-removed {
   display: none;
 }
-.erroneous-run #nprogress blockquote {
+.erroneous-run #nprogress blockquote,
+.nprogress-busy.erroneous-run #nprogress blockquote,
+.nprogress-busy.nprogress-signaled.erroneous-run #nprogress blockquote {
   border-color: #C04;
 }

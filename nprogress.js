@@ -344,7 +344,7 @@
     // 
     // This next `NProgress.queueWorker` condition is sufficient to detect if this `set` action is executed
     // after the *last* `done` action (for which we need to correct as we're *restarting*):
-    if (!started || (NProgress.queueWorker && NProgress.queueWorker <= 2)) {
+    if (!started || (NProgress.queueWorker && NProgress.queueWorker <= 3)) {
       // compensate for the *restart*:
       // 
       // - an old signal may still be pending ==> remove it
@@ -352,9 +352,6 @@
       progress = document.getElementById('nprogress');
       if (NProgress.signaled) {
         II.removeClass(document.documentElement, NProgress.signaled.signal_class || 'nprogress-signaled');
-      }
-      if (progress && progress.parentNode) {
-        II.removeClass(progress.parentNode, 'nprogress-parent');
       }
 
       // and make sure the message gets replaced/cleaned, no matter what!
@@ -367,18 +364,25 @@
 
       // Did we already fire the `onDoneBegin` event? in that case we should
       // retrigger the `onStart` event:
-      if (NProgress.queueWorker < 2) {
+      if (NProgress.queueWorker <= 2) {
         started = false;            // retrigger `onStart`
       }
 
+      // when we truly *restart* (including a re-`render` action below), we MAY
+      // re-attach the progress bar to another parent in the `render()` action,
+      // hence we should then clean up the current parent now:
+      if (!started && progress && progress.parentNode) {
+        II.removeClass(progress.parentNode, 'nprogress-parent');
+      }
+
       if (NProgress.queueWorker) {
-        NProgress.queueWorker += 3;
+        NProgress.queueWorker += 4;
 
         // and subtract the same amount once the queue has been depleted:
         // this entry will execute at the end, i.e. beyond the already queued
         // 'done'-related entries. 
         queue.fast(function () {
-          NProgress.queueWorker -= 3;
+          NProgress.queueWorker -= 4;
         }, 0);
       }
 
@@ -470,7 +474,7 @@
       }
 
       if (n === 1) {
-        NProgress.queueWorker += 2;
+        NProgress.queueWorker += 3;
         
         kill_trickle();
         queue.fast(function () {
@@ -479,6 +483,8 @@
           // 
           // WARNING: it MAY happen that userland code receives the `onDoneBegin`
           //          event *before* it *restarts* the progress bar!
+          NProgress.queueWorker--;
+
           if (NProgress.queueWorker === 2) {
             Settings.onDoneBegin();
 
@@ -661,12 +667,30 @@
     // Ignore any errors signaled *before* we `.start()`:
     if (!NProgress.isStarted()) return this;
 
+    // WARNING:
+    //         
+    // The error signal MAY itself become a *restart* when the error signal is received
+    // in the middle of executing of the `done` queue sequence. 
+    // In that case, the *restart* logic in `inc()`-->`set()` will treat the signal as 
+    // an *old* signal and thus nuke the signal on the spot.
+    // Hence we must first tickle the system into executing a potential *restart*,
+    // *immediately after which* we signal the error and update the display:
+    // 
+    // - Add a non-zero increment to cope with the edge case when the progress bar
+    //   has just been stopped via `done`: get NProgress to detect a *restart* right now
+    //   before we do anything else!
+    //   
+    // - Add a non-zero increment to cope with the edge case when the progress bar
+    //   has just been started/reset and an error is signaled *immediately*:
+    NProgress.inc(1e-6);
+     
+    // Now that we have restarted, if such was necessary, we can safely signal the *new* 
+    // error signal:
     NProgress.signaled = signaled_state || NProgress.signaled || true;
 
     II.addClass(document.documentElement, NProgress.signaled.signal_class || 'nprogress-signaled');
 
-    // Add a non-zero increment to cope with the edge case when the progress bar
-    // has just been started/reset and an error is signaled *immediately*:
+    // Add a non-zero increment to cajole NProgress into producing a UI update:
     return NProgress.inc(1e-6, msg);
   };
 

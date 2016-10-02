@@ -391,7 +391,8 @@ div.hr-rule
 // --------------------------------------------
 
 // This class is set by default by the NProgress library on the ROOT node when the `.signal()` API has been invoked.
-.nprogress-signaled
+.nprogress-signaled,
+.nprogress-busy.nprogress-signaled        // make sure override the .demo-style-change style due to CSS precedence!
 {
   #nprogress
   {
@@ -411,7 +412,9 @@ div.hr-rule
 }
 
 // The demo sets this class on the ROOT when `.signal()` is invoked BEFORE hitting the 99% mark through using the userland `tick()` function ~ `onTickle` event handler.
-.erroneous-run
+.erroneous-run,
+.nprogress-busy.erroneous-run,                          // make sure override the .demo-style-change style due to CSS precedence!
+.nprogress-busy.nprogress-signaled.erroneous-run        // make sure override the .demo-style-change style due to CSS precedence!
 {
   #nprogress
   {
