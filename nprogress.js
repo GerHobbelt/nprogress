@@ -824,7 +824,7 @@
    */
   NProgress.isRendered = function () {
     var progress = document.getElementById('nprogress');
-    return !progress || !II.hasClass(progress, 'nprogress-removed');
+    return progress && !II.hasClass(progress, 'nprogress-removed');
   };
 
   /**
