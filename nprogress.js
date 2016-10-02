@@ -127,7 +127,7 @@
           if (max_duration_ms == null) {
             max_duration_ms = Settings.speed;
           }
-          var std_speed = max_duration_ms / 4;
+          var std_speed = max_duration_ms / Math.max(4, pending.length * 2);
           for (var i = 0, len = pending.length; i < len; i++) {
             if (typeof pending[i] === 'function') {
               pending[i] = {
@@ -725,6 +725,11 @@
 
     if (progress) {
       II.removeClass(progress, 'nprogress-removed');
+      // And nuke any CSS attributes set during a previous done/remove action:
+      css(progress, {
+        transition: 'none',
+        opacity: 1
+      });
     } else {
       progress = document.createElement('div');
     }

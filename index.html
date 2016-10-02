@@ -114,9 +114,9 @@
     // update work). The switching points ('markers') are sorted from last to first to
     // simplify the `tick()` code.
     var boot_time_markers = [
-      // NProgress.inc() will never arrive at 'done' all by itself as it won't push the .status beyond the 0.994 mark:
+      // NProgress.inc() will never arrive at 'done' all by itself as it won't push the .status beyond the 0.985 mark:
       {
-        status: 0.99,
+        status: 0.98,
         action: function () {
           NProgress.Internals.removeClass(document.documentElement, 'demo-style-change');
           
@@ -229,11 +229,13 @@
       switch (key) {
       // [S]
       case 83:
+          console.log('start!');
           NProgress.start('[S] key started it...');
           break;
   
       // [D]
       case 68:
+          console.log('end!');
           NProgress.done(true, '[D] key ended it...');
           break;
   
