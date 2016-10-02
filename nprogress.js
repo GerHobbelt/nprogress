@@ -140,9 +140,6 @@
             pending[i].speed |= 0;
           }
         };
-        q.size = function () {
-          return pending.length;
-        };
 
         return q;
       },
@@ -348,25 +345,39 @@
     // This next `NProgress.queueWorker` condition is sufficient to detect if this `set` action is executed
     // after the *last* `done` action (for which we need to correct as we're *restarting*):
     if (!started || (NProgress.queueWorker && NProgress.queueWorker <= 2)) {
+      // compensate for the *restart*:
+      // 
+      // - an old signal may still be pending ==> remove it
+      // - the next `.render()` call may apply a new `Settings.parent` hence *move* the progress bar DOM ==> clean up the current parent, if there's any
+      progress = document.getElementById('nprogress');
+      if (NProgress.signaled) {
+        II.removeClass(document.documentElement, NProgress.signaled.signal_class || 'nprogress-signaled');
+      }
+      if (progress && progress.parentNode) {
+        II.removeClass(progress.parentNode, 'nprogress-parent');
+      }
+
+      // and make sure the message gets replaced/cleaned, no matter what!
+      if (t == null) {
+        t = '';
+      }
+      
       NProgress.signaled = false;
       NProgress.msg = null;
 
       // Did we already fire the `onDoneBegin` event? in that case we should
       // retrigger the `onStart` event:
       if (NProgress.queueWorker < 2) {
-        console.log('retrigger ON-START', NProgress.queueWorker, queue.size());
         started = false;            // retrigger `onStart`
       }
 
       if (NProgress.queueWorker) {
-        console.log('bump tracker up by 3', NProgress.queueWorker, queue.size());
         NProgress.queueWorker += 3;
 
         // and subtract the same amount once the queue has been depleted:
         // this entry will execute at the end, i.e. beyond the already queued
         // 'done'-related entries. 
         queue.fast(function () {
-          console.log('bump tracker DOWN by 3', NProgress.queueWorker, queue.size());
           NProgress.queueWorker -= 3;
         }, 0);
       }
@@ -377,8 +388,6 @@
       // we do it right now, right here!
       // 
       // Nuke any CSS attributes set during a previous done/remove action:
-      progress = document.getElementById('nprogress');
-      console.log('reset opacity to 1 on RESTART', NProgress.queueWorker, queue.size(), progress);
       if (progress) {
         css(progress, {
           transition: 'none',
@@ -397,7 +406,7 @@
     // The *only* 'smaller-than-everything-else-which-came-before' perunage value `n`
     // which *will* be processed is the exact value `n = 0` which signals the progress bar
     // is being *reset*.
-    var must_progress_update = (f || !(started && (NProgress.status > n ? n !== 0 || NProgress.status === 1 : NProgress.status === n)));
+    var must_progress_update = (f || !(started && NProgress.status === n && NProgress.queueWorker === 0));
     if (must_progress_update) {
       NProgress.status = n;
 
@@ -412,17 +421,16 @@
     }
 
     if (!started) {
-      console.log('starting - queueworker:', NProgress.queueWorker, queue.size());
       Settings.onStart();
     }
 
-    progress = NProgress.render(!started);
-    var bar      = II.findElementByAny(progress, Settings.barId),
-        msg      = NProgress.msg,
-        speed    = Settings.speed,
-        ease     = Settings.easing;
-
     if (must_progress_update || must_set_message) {
+      progress = NProgress.render(!started);
+      var bar      = II.findElementByAny(progress, Settings.barId),
+          msg      = NProgress.msg,
+          speed    = Settings.speed,
+          ease     = Settings.easing;
+
       // And before we queue ours, we signal the queue that any old pending items should be done ASAP:
       queue.make_em_hurry();
 
@@ -463,7 +471,6 @@
 
       if (n === 1) {
         NProgress.queueWorker += 2;
-        console.log('queueworker @ DONE: ', NProgress.queueWorker, queue.size());
         
         kill_trickle();
         queue.fast(function () {
@@ -787,22 +794,23 @@
    */
   NProgress.render = function (fromStart) {
     var progress = document.getElementById('nprogress');
+
     if (NProgress.isRendered()) {
       return progress;
     }
 
     II.addClass(document.documentElement, 'nprogress-busy');
     if (NProgress.signaled) {
-      II.addClass(document.documentElement, (NProgress.signaled && NProgress.signaled.signal_class) || 'nprogress-signaled');
+      II.addClass(document.documentElement, NProgress.signaled.signal_class || 'nprogress-signaled');
     }
 
     if (progress) {
       II.removeClass(progress, 'nprogress-removed');
     } else {
       progress = document.createElement('div');
+      progress.id = 'nprogress';
+      progress.innerHTML = Settings.template;
     }
-    progress.id = 'nprogress';
-    progress.innerHTML = Settings.template;
     progress.className = {
       'leftToRightIncreased': 'clockwise',
       'leftToRightReduced': 'anti-clockwise',
@@ -861,7 +869,9 @@
       console.log('WARNING: failed to locate NProgress designated parent node: ', Settings.parent);
       parent = Settings.parent = document.body;
     }
-    parent.appendChild(progress);
+    if (parent !== progress.parentNode) {
+      parent.appendChild(progress);
+    }
     II.addClass(parent, 'nprogress-parent');
 
     return progress;
