@@ -72,9 +72,7 @@
     box-shadow: 0 0 10px @bar-color, 0 0 5px @bar-color;
     opacity: 1.0;
 
-    -webkit-transform: rotate(3deg);
-        -ms-transform: rotate(3deg);
-            transform: rotate(3deg);
+    transform: rotate(3deg);
 
     transition: box-shadow @transition-speed @transition-mode;
   }
@@ -133,16 +131,14 @@
       border-left-color: @bar-color;
       border-radius: 50%;
 
-      -webkit-animation: nprogress-spinner 400ms linear infinite;
-              animation: nprogress-spinner 400ms linear infinite;
+      animation: nprogress-spinner 400ms linear infinite;
 
       transition: border-color @transition-speed @transition-mode;
     }
   }
 
   &.anti-clockwise .spinner-icon {
-    -webkit-animation-direction: reverse;
-            animation-direction: reverse;
+    animation-direction: reverse;
   }
 
   &.nprogress-removed {
