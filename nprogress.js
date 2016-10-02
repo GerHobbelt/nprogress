@@ -140,6 +140,9 @@
             pending[i].speed |= 0;
           }
         };
+        q.size = function () {
+          return pending.length;
+        };
 
         return q;
       },
@@ -337,10 +340,51 @@
    */
   NProgress.set = function (n, t, f) {
     var started = NProgress.isStarted();
+    var progress;
 
-    if (!started) {
+    // Reset signal when we start OR when we *restart* while another `done` is pending:
+    // this starts a new, fresh progress cycle!
+    // 
+    // This next `NProgress.queueWorker` condition is sufficient to detect if this `set` action is executed
+    // after the *last* `done` action (for which we need to correct as we're *restarting*):
+    if (!started || (NProgress.queueWorker && NProgress.queueWorker <= 2)) {
       NProgress.signaled = false;
       NProgress.msg = null;
+
+      // Did we already fire the `onDoneBegin` event? in that case we should
+      // retrigger the `onStart` event:
+      if (NProgress.queueWorker < 2) {
+        console.log('retrigger ON-START', NProgress.queueWorker, queue.size());
+        started = false;            // retrigger `onStart`
+      }
+
+      if (NProgress.queueWorker) {
+        console.log('bump tracker up by 3', NProgress.queueWorker, queue.size());
+        NProgress.queueWorker += 3;
+
+        // and subtract the same amount once the queue has been depleted:
+        // this entry will execute at the end, i.e. beyond the already queued
+        // 'done'-related entries. 
+        queue.fast(function () {
+          console.log('bump tracker DOWN by 3', NProgress.queueWorker, queue.size());
+          NProgress.queueWorker -= 3;
+        }, 0);
+      }
+
+      // Reset the CSS 'opacity' to compensate for the potential fade-out 
+      // before we *restarted* the progress bar!
+      // As this fade-out may already have occurred, we compensate ASAP, hence
+      // we do it right now, right here!
+      // 
+      // Nuke any CSS attributes set during a previous done/remove action:
+      progress = document.getElementById('nprogress');
+      console.log('reset opacity to 1 on RESTART', NProgress.queueWorker, queue.size(), progress);
+      if (progress) {
+        css(progress, {
+          transition: 'none',
+          opacity: 1
+        });
+      }
     }
 
     n = clamp(n, Settings.minimum, 1);
@@ -353,7 +397,7 @@
     // The *only* 'smaller-than-everything-else-which-came-before' perunage value `n`
     // which *will* be processed is the exact value `n = 0` which signals the progress bar
     // is being *reset*.
-    var must_progress_update = (f || !(started && (NProgress.status > n ? n !== 0 : NProgress.status === n)));
+    var must_progress_update = (f || !(started && (NProgress.status > n ? n !== 0 || NProgress.status === 1 : NProgress.status === n)));
     if (must_progress_update) {
       NProgress.status = n;
 
@@ -368,11 +412,12 @@
     }
 
     if (!started) {
+      console.log('starting - queueworker:', NProgress.queueWorker, queue.size());
       Settings.onStart();
     }
 
-    var progress = NProgress.render(!started),
-        bar      = II.findElementByAny(progress, Settings.barId),
+    progress = NProgress.render(!started);
+    var bar      = II.findElementByAny(progress, Settings.barId),
         msg      = NProgress.msg,
         speed    = Settings.speed,
         ease     = Settings.easing;
@@ -418,6 +463,7 @@
 
       if (n === 1) {
         NProgress.queueWorker += 2;
+        console.log('queueworker @ DONE: ', NProgress.queueWorker, queue.size());
         
         kill_trickle();
         queue.fast(function () {
@@ -425,17 +471,19 @@
           // have completed running!
           // 
           // WARNING: it MAY happen that userland code receives the `onDoneBegin`
-          //          event *after* it has already *restarted* the progressbar!
-          Settings.onDoneBegin();
+          //          event *before* it *restarts* the progress bar!
+          if (NProgress.queueWorker === 2) {
+            Settings.onDoneBegin();
 
-          // Prepare for future fade out; for now keep the latest message in view
-          // for a while: make it last `Settings.endDuration` milliseconds.
-          // 
-          // Note: Do not wait when there's no message to display.
-          css(progress, {
-            transition: 'none',
-            opacity: 1
-          });
+            // Prepare for future fade out; for now keep the latest message in view
+            // for a while: make it last `Settings.endDuration` milliseconds.
+            // 
+            // Note: Do not wait when there's no message to display.
+            css(progress, {
+              transition: 'none',
+              opacity: 1
+            });
+          }
         }, (!NProgress.msg || !Settings.showMessage) ? 0 : Settings.endDuration);
         queue.fast(function () {
           NProgress.queueWorker--;
@@ -503,7 +551,9 @@
     // Pick up the configured settings (`.configure(...)`):
     Settings = NProgress.settings;
 
-    if (!NProgress.isStarted()) {
+    // We are either starting OR *restarting* (as another `done` is pending):
+    // we treat both as an actionable *start*:
+    if (!NProgress.isStarted() || NProgress.queueWorker) {
       NProgress.set(0, t, true);
     }
 
@@ -748,11 +798,6 @@
 
     if (progress) {
       II.removeClass(progress, 'nprogress-removed');
-      // And nuke any CSS attributes set during a previous done/remove action:
-      css(progress, {
-        transition: 'none',
-        opacity: 1
-      });
     } else {
       progress = document.createElement('div');
     }
