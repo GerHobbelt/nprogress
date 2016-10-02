@@ -1018,12 +1018,12 @@
     if (selector.appendChild) {
       return selector;
     }
+    if (!root) {
+      root = document;
+    }
     // don't crash in antique browsers:
     if (typeof root.querySelector !== 'function') {
       return null;
-    }
-    if (!root) {
-      root = document;
     }
     var s = '' + selector;
     if (s.match(/^[a-z_]+[\w:.-]*$/)) {
