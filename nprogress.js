@@ -138,8 +138,6 @@
               pending[i].speed /= 2;
             }
             pending[i].speed |= 0;
-            // pending[i].speed = min(pending[i].speed, max_duration_ms);
-            // max_duration_ms -= pending[i].speed;
           }
         };
 
@@ -303,6 +301,12 @@
    * Last status (number).
    */
   NProgress.status = null;
+  
+  /**
+   * Queue worker: tracks the number of nested start/done progress bar cycles
+   * running concurrently. 
+   */
+  NProgress.queueWorker = 0;
 
   /**
    * Last status message (string).
@@ -413,10 +417,15 @@
       }
 
       if (n === 1) {
+        NProgress.queueWorker += 2;
+        
         kill_trickle();
         queue.fast(function () {
           // Execute `onDoneBegin()` quickly, but not before all older queued functions
           // have completed running!
+          // 
+          // WARNING: it MAY happen that userland code receives the `onDoneBegin`
+          //          event *after* it has already *restarted* the progressbar!
           Settings.onDoneBegin();
 
           // Prepare for future fade out; for now keep the latest message in view
@@ -429,15 +438,29 @@
           });
         }, (!NProgress.msg || !Settings.showMessage) ? 0 : Settings.endDuration);
         queue.fast(function () {
-          // Fade out
-          css(progress, {
-            transition: 'all ' + speed + 'ms linear',
-            opacity: 0
-          });
+          NProgress.queueWorker--;
+
+          if (NProgress.queueWorker === 1) {
+            // Fade out
+            css(progress, {
+              transition: 'all ' + speed + 'ms linear',
+              opacity: 0
+            });
+          }
         }, speed);
         queue.fast(function () {
-          NProgress.remove();
-          Settings.onDone();
+          NProgress.queueWorker--;
+            
+          if (NProgress.queueWorker === 0) {
+            NProgress.remove();
+            // The `onDone` event is only fired when the progressbar has truly
+            // stopped running. 
+            // 
+            // When you have *restarted* the progressbar before this queue
+            // entry executes, then the `onDone` event will not fire until
+            // the restarted progressbar action has been `done`.
+            Settings.onDone();
+          }
         });
       } else {
         trickle_work();
