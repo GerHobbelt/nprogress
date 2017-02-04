@@ -609,14 +609,14 @@
         var lim = Settings.incMaxRate;      // minimum growth rate
         var top = 1 - 0.01;                 // absolute maximum growth rate
         var rnd = Math.random() * lim;
-        if (d < 0.2) {
+        if (d < 0.2 * (1 - Settings.topHoldOff)) {
           // Start out between 3 - 6% increments --> 50-100% of the configured incMaxRate:
           lim /= 2;
-        } else if (d < 0.5) {
+        } else if (d < 0.5 * (1 - Settings.topHoldOff)) {
           // increment between 0 - 3% --> 5-50% of the configured incMaxRate:
           lim /= 20;
           rnd /= 2;
-        } else if (d < 0.8) {
+        } else if (d < 0.8 * (1 - Settings.topHoldOff)) {
           // increment between 0 - 2% --> 3-33% of the configured incMaxRate:
           lim /= 33;
           rnd /= 3;
