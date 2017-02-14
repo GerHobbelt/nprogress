@@ -599,8 +599,6 @@
 
     if (!NProgress.isStarted()) {
       return NProgress.start(t);
-    } else if (n > 1) {
-      return this;
     } else {
       if (typeof amount !== 'number') {
         // Do not increment beyond the configured 'maximum'; gradually increase towards that maximum
@@ -630,6 +628,13 @@
           rnd = 0;
         }
         amount = (Settings.maximum - n) * clamp(rnd, lim, top);
+      }
+
+      if (n >= 1) {
+        // When you try to *increment* an already 'done' progress bar, we simply
+        // *ignore* the 'increment', which would otherwise have retriggered a
+        // new progress run!
+        return this;
       }
 
       n = clamp(n + amount, 0, Settings.maximum - Settings.topHoldOff);
