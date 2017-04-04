@@ -172,7 +172,7 @@ You can adjust the *trickleRate* (how much to increase per trickle) and
 *trickleSpeed* (how often to trickle, in ms).
 
 ~~~ js
-NProgress.configure({ trickleRate: 0.02, trickleSpeed: 800 });
+NProgress.configure({ trickleRate: 0.01, trickleSpeed: 200 });
 ~~~
 
 #### `showSpinner`
