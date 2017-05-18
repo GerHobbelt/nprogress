@@ -38,6 +38,26 @@ button
   cursor: pointer;
 }
 
+// styling the KBD tag as per https://github.com/michaelhue/keyscss (customized)
+@import "../node_modules/keyscss/keys-macros";
+
+kbd
+{
+    .keycap-light();
+
+    padding: 0em .25em .0em .25em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+
+    // font-size: .85em;
+    // line-height: 1;
+
+    // font-size: 58px;
+    // line-height: 45px;
+
+    // vertical-align: baseline;        
+}
+
 *
 {
   text-rendering: optimizeLegibility;

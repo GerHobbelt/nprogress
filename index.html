@@ -73,10 +73,10 @@
           <a href="?speed=default">default</a>.
         </li>
         <li>This demo also listens to the keyboard: 
-		S to start the bar, 
-		D to signal it's done, 
-		E to simulate signaling an error, 
-		0..9 to set the progress to 0..90% 
+		<kbd>S</kbd> to start the bar, 
+		<kbd>D</kbd> to signal it's done, 
+		<kbd>E</kbd> to simulate signaling an error, 
+		<kbd>0</kbd>..<kbd>9</kbd> to set the progress to 0..90% 
 		and any other key to help increment the progress.</li>
       </ul>
     </div>
@@ -122,7 +122,7 @@
           
           NProgress.done(false, "Initial example animation completed");
 
-          // slow_fade_all_ends_all(); <-- executed via NProgress.settings.onDoneBegin instead
+          //slow_fade_all_ends_all(); //<-- executed via NProgress.settings.onDoneBegin instead
         }
       },
       {
@@ -230,18 +230,19 @@
       // [S]
       case 83:
           console.log('start!');
-          NProgress.start('[S] key started it...');
+          NProgress.start('<kbd>S</kbd> key started it...');
           break;
   
       // [D]
       case 68:
           console.log('end!');
-          NProgress.done(true, '[D] key ended it...');
+          debugger;
+          NProgress.done(true, '<kbd>D</kbd> key ended it...');
           break;
   
       // [E]
       case 69:
-          NProgress.signal(true, '[E] key was used to signal an error...');
+          NProgress.signal(true, '<kbd>E</kbd> key was used to signal an error...');
           break;
   
       // [0]..[9]
@@ -255,7 +256,7 @@
       case 55:
       case 56:
       case 57:
-          NProgress.set((key - 48) * 0.1, '[' + String.fromCharCode(key) + '] key set the progress to ' + ((key - 48) * 10) + '%...', true);
+          NProgress.set((key - 48) * 0.1, '<kbd>' + String.fromCharCode(key) + '</kbd> key set the progress to ' + ((key - 48) * 10) + '%...', true);
           break;
   
       default:
@@ -293,7 +294,7 @@
         // NProgress.inc() will never arrive at 'done' all by itself as it won't push 
         // the `.status` beyond the 0.994 mark:
         {
-          status: 0.99,
+          status: 0.98,
           action: function () {
             // Signal error state by changing the UI:
             if (NProgress.signaled) {
