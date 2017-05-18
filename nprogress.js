@@ -337,6 +337,7 @@
    */
   NProgress.set = function (n, t, f) {
     var started = NProgress.isStarted();
+    var is_done = false;
     var progress;
 
     // Reset signal when we start OR when we *restart* while another `done` is pending:
@@ -377,12 +378,14 @@
 
       if (NProgress.queueWorker) {
         NProgress.queueWorker += 4;
+debugger;
 
         // and subtract the same amount once the queue has been depleted:
         // this entry will execute at the end, i.e. beyond the already queued
         // 'done'-related entries. 
         queue.fast(function () {
           NProgress.queueWorker -= 4;
+debugger;          
         }, 0);
       }
 
@@ -400,7 +403,9 @@
       }
     }
 
+console.log('set before clamp: ', n);
     n = clamp(n, Settings.minimum, 1);
+console.log('set after clamp: ', n);
     // speed-up: when set() is called very often with the same progress perunage,
     // we simply ignore the multiple calls as long as they don't change anything.
     //
@@ -412,6 +417,7 @@
     // is being *reset*.
     var must_progress_update = (f || !(started && NProgress.status === n && NProgress.queueWorker === 0));
     if (must_progress_update) {
+      is_done = (NProgress.status !== 1 && n === 1);
       NProgress.status = n;
 
       // Set positionUsing if it hasn't already been set
@@ -473,9 +479,13 @@
         }, speed);
       }
 
-      if (n === 1) {
+      // Only queue these 'done' processes when we actually *transition* from
+      // 'not-done' to 'done'! 
+      if (n === 1 && is_done) {
         NProgress.queueWorker += 3;
-        
+
+console.log('queue DONE');        
+debugger;
         kill_trickle();
         queue.fast(function () {
           // Execute `onDoneBegin()` quickly, but not before all older queued functions
@@ -484,7 +494,7 @@
           // WARNING: it MAY happen that userland code receives the `onDoneBegin`
           //          event *before* it *restarts* the progress bar!
           NProgress.queueWorker--;
-
+debugger;
           if (NProgress.queueWorker === 2) {
             Settings.onDoneBegin();
 
@@ -500,6 +510,7 @@
         }, (!NProgress.msg || !Settings.showMessage) ? 0 : Settings.endDuration);
         queue.fast(function () {
           NProgress.queueWorker--;
+debugger;
 
           if (NProgress.queueWorker === 1) {
             // Fade out
@@ -511,6 +522,7 @@
         }, speed);
         queue.fast(function () {
           NProgress.queueWorker--;
+debugger;
             
           if (NProgress.queueWorker === 0) {
             NProgress.remove();
@@ -523,9 +535,27 @@
             Settings.onDone();
           }
         });
-      } else {
-        trickle_work();
       }
+
+      // Note:
+      // 
+      // For our understand of the NProgress code as a whole: `set(1)` i.e.
+      // 'done()` may very well be invoked from inside a user callback inside
+      // an already running `.trickle()' call - as in the example code in our
+      // own demo page `index.html`, for instance.
+      // 
+      // Since the `trickle` who may have invoked is very probably part of
+      // a `trickle_work()` call, the code there will re-install a next
+      // `trickle_work()` call via timer anyway, so there's no use to set
+      // that same one up here only in the `else` branch of `if (is_done...)`
+      // as that would cause only confusion, since we need to handle situation
+      // *anyway* where another `trickle()` call will follow the state
+      // where we come to the conclusion that we are done via `is_done`.
+      // 
+      // Hence we call `trickle_work()` always, below, and cope with the
+      // resulting problem of running another `.set()` after we're `done()`
+      // (even when we are *not* restarted!) *elsewhere*:
+      trickle_work();
     }
 
     return this;
@@ -632,7 +662,9 @@
         amount = (Settings.maximum - n) * clamp(rnd, lim, top);
       }
 
-      n = clamp(n + amount, 0, Settings.maximum - Settings.topHoldOff);
+      // Clamp to the holdOff limit, unless we're already *past* that limit
+      // (probably due to a previous explicit invocation of `.set(1)` ~ `.done()`)
+      n = clamp(n + amount, 0, Math.max(n, Settings.maximum - Settings.topHoldOff));
       return NProgress.set(n, t);
     }
   };
@@ -1031,8 +1063,18 @@
   }
 
   function trickle_work() {
+    if (NProgress.status === 1) {
+      debugger;
+      kill_trickle();
+      return;
+    }
     if (!trickle_work_h) {
       Settings.onTrickle();
+    }
+    if (NProgress.status === 1) {
+      debugger;
+      kill_trickle();
+      return;
     }
     // User code invoked by `onTrickle()` *may* set up the trickle again, so we better check again:
     if (!trickle_work_h) {
